@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Note this is obviously not a secure way of hiding keys as they can easily be decompiled, but
-at least we can gitignore it so it does not show up in the public repo -->
-<resources>
-    <string name="maps_api_key">your_api_key</string>
-</resources>
