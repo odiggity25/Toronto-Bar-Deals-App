@@ -4,18 +4,21 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.support.v4.app.FragmentManager
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxbinding2.view.detaches
 import com.tbd.app.models.Bar
+import com.tbd.app.utils.hideKeyboard
+import com.tbd.app.utils.pxToDp
 import com.tbd.app.utils.view.throttleClicks
-import com.wattpad.tap.util.pxToDp
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -26,14 +29,15 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by orrie on 2017-06-19.
  */
-class MainView(context: Context, supportFragmentManager: FragmentManager) : FrameLayout(context), OnMapReadyCallback {
+class MainView(context: Context, supportFragmentManager: FragmentManager) : LinearLayout(context), OnMapReadyCallback {
 
-    var googleMap: GoogleMap? = null
-    val mapFragment by lazy { supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment }
+    private var googleMap: GoogleMap? = null
+    private val mapFragment by lazy { supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment }
     val addBarClicks by lazy { findViewById(R.id.main_add_bar).throttleClicks() }
-    val addImage by lazy { findViewById(R.id.main_add_bar) as ImageView }
-    var addDealView: AddDealView? = null
-    val container by lazy { findViewById(R.id.main_container) as FrameLayout }
+    private val addImage by lazy { findViewById(R.id.main_add_bar) as ImageView }
+    private var addDealView: AddDealView? = null
+    private val container by lazy { findViewById(R.id.main_container) as FrameLayout }
+    val dealListView by lazy { findViewById(R.id.deal_list_view) as DealListView }
 
     private val mapReadiesSubject = PublishSubject.create<Unit>()
     val mapReadies: Observable<Unit> = mapReadiesSubject.hide()
@@ -49,11 +53,12 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Fram
     init {
         View.inflate(context, R.layout.view_main, this)
         layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        orientation = VERTICAL
         mapFragment.getMapAsync(this)
         addBarClicks.throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe { if (addImage.rotation == 0f) addBarDialogShowsSubject.onNext(Unit)
                 else addBarDialogClosesSubject.onNext(Unit) }
-        MainPresenter(this, detaches())
+        MainPresenter(this, detaches(), dealListView)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -91,6 +96,7 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Fram
                 .setDuration(200)
                 .setListener(null)
 
+        addImage.bringToFront()
         addImage.animate()
                 .rotation(135f)
                 .setDuration(200)
@@ -104,6 +110,7 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Fram
     }
 
     fun closeAddBarView() {
+        hideKeyboard(context as AppCompatActivity)
         addImage.rotation = 45f
         addImage.animate()
                 .rotation(-180f)

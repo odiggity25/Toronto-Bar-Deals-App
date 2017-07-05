@@ -13,9 +13,11 @@ import timber.log.Timber
 /**
  * Created by orrie on 2017-06-19.
  */
-class MainPresenter(val mainView: MainView,
-                    val cancelSignal: Observable<Unit>,
-                    val barDealsApi: BarDealsApi = BarDealsApi())  {
+class MainPresenter(private val mainView: MainView,
+                    private val cancelSignal: Observable<Unit>,
+                    private val dealListView: DealListView,
+                    private val barDealsApi: BarDealsApi = BarDealsApi())  {
+
 
     init {
         mainView.mapReadies.subscribe { mapReady() }
@@ -38,7 +40,8 @@ class MainPresenter(val mainView: MainView,
         barDealsApi.fetchBarsForLocation(GeoLocation(latLngBounds.center.latitude, latLngBounds.center.longitude),
                 radius.toDouble())
                 .subscribe({
-                    it.forEach { mainView.addMarker(it) }
+                    it.forEach { mainView.addMarker(it.bar) }
+                    dealListView.bind(it)
                 }, {
                     Timber.e("Failed to retrieve bars ${it.message}")
                 }).autoDispose(cancelSignal)

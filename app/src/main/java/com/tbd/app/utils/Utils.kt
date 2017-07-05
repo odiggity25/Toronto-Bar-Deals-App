@@ -1,4 +1,4 @@
-package com.wattpad.tap.util
+package com.tbd.app.utils
 
 import android.content.res.Resources
 

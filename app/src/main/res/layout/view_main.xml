@@ -6,12 +6,14 @@
     tools:layout_height="match_parent"
     tools:context="com.tbd.app.MainActivity"
     tools:orientation="vertical"
+    tools:parentTag="LinearLayout"
     >
 
     <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         >
 
         <fragment
@@ -21,18 +23,24 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.example.mapwithmarker.MapsMarkerActivity"
+            tools:context=".MainActivity"
             />
+
+        <ImageView
+                android:id="@+id/main_add_bar"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/ic_add"
+                android:layout_gravity="top|end"
+                />
 
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/main_add_bar"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_margin="8dp"
-        android:src="@drawable/ic_add"
-        android:layout_gravity="top|end"
+    <com.tbd.app.DealListView
+        android:id="@+id/deal_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
         />
 
 </merge>

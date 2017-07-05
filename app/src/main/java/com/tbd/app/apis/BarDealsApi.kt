@@ -2,6 +2,7 @@ package com.tbd.app.apis
 
 import com.firebase.geofire.GeoLocation
 import com.tbd.app.models.Bar
+import com.tbd.app.models.BarDeals
 import com.tbd.app.models.Deal
 import com.tbd.app.utils.firebase.RxFirebaseDb
 import io.reactivex.Completable
@@ -19,13 +20,13 @@ class BarDealsApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
             rxFirebaseDb.valueExists("bars/${bar.id}")
                     .flatMapCompletable { exists ->
                         if (!exists) {
-                            addDeal(bar, deal)
+                            addBar(bar)
                         } else {
-                            Completable.create { it.onComplete() }
+                            Completable.complete()
                         }
                     }
                     .andThen (
-                        addBar(bar)
+                        addDeal(bar, deal)
                     )
 
     fun addBar(bar: Bar): Completable =
@@ -36,9 +37,9 @@ class BarDealsApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                             "lon" to bar.lng,
                             "image_url" to bar.imageUrl
                     ))
-                    .andThen {
+                    .andThen (
                         geoFireApi.setBarLocation(bar.id, GeoLocation(bar.lat, bar.lng))
-                    }
+                    )
 
     fun addDeal(bar: Bar, deal: Deal): Completable {
         val key = rxFirebaseDb.getKey("deals/${bar.id}/")
@@ -55,13 +56,23 @@ class BarDealsApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
     fun fetchBar(id: String): Single<Bar> =
             rxFirebaseDb.fetch("bars/$id", barDealsParser::parseBar)
 
-    fun fetchBarsForLocation(geoLocation: GeoLocation, radius: Double): Single<Set<Bar>> =
+    fun fetchDeals(barId: String): Single<MutableList<Deal>> =
+            rxFirebaseDb.fetch("deals/$barId/", barDealsParser::parseDeals)
+
+    fun fetchBarDeals(id: String): Single<BarDeals> =
+            fetchBar(id)
+                    .flatMap { bar ->
+                        fetchDeals(bar.id)
+                                .flatMap { Single.just(BarDeals(bar, it)) }
+
+                    }
+
+    fun fetchBarsForLocation(geoLocation: GeoLocation, radius: Double): Single<MutableList<BarDeals>> =
                 geoFireApi.fetchBarIds(geoLocation, radius)
                         .flatMap {
                             Observable.fromIterable(it)
-                                    .flatMapSingle { fetchBar(it) }
+                                    .flatMapSingle { fetchBarDeals(it) }
                                     .toList()
-                                    .map { it.toSet() }
                         }
 
 }

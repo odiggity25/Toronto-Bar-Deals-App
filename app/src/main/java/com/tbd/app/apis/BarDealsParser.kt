@@ -33,6 +33,16 @@ class BarDealsParser {
         return Deal(id, daysOfWeek, tags, description, allDay, startTime, endTime)
     }
 
+    fun parseDeals(dataSnapshot: DataSnapshot): MutableList<Deal> {
+        val deals = mutableListOf<Deal>()
+        dataSnapshot.children
+                .forEach {
+                    val deal = parseDeal(it)
+                    deal?.let { deals.add(it) }
+                }
+        return deals
+    }
+
     fun parseDealTags(dataSnapshot: DataSnapshot): MutableSet<String> {
         val tags = mutableSetOf<String>()
         dataSnapshot.children.forEach { tags.add(it.value as String) }
@@ -41,7 +51,7 @@ class BarDealsParser {
 
     fun parseDaysOfWeek(dataSnapshot: DataSnapshot): MutableSet<Int> {
         val days = mutableSetOf<Int>()
-        dataSnapshot.children.forEach { days.add(it.value as Int) }
+        dataSnapshot.children.forEach { days.add((it.value as Long).toInt()) }
         return days
     }
 
