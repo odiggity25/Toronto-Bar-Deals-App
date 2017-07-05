@@ -39,23 +39,20 @@ class DealListAdapter(private val context: Context,
     fun getItem(position: Int): BarDeals =
             barDealsList[position]
 
+    fun getPosition(barId: String): Int =
+        barDealsList.indexOfFirst { it.bar.id == barId }
+
     fun addItem(barDeals: BarDeals) {
         barDealsList.add(barDeals)
         notifyItemInserted(barDealsList.lastIndex)
     }
 
     fun removeItem(barDealsToRemove: BarDeals) {
-        var indexToRemove: Int? = null
-        barDealsList.forEachIndexed { index, barDeals ->
-            if (barDealsToRemove.bar.id == barDeals.bar.id) {
-                indexToRemove = index
-            }
+        var indexToRemove = barDealsList.indexOfFirst { it.bar.id == barDealsToRemove.bar.id }
+        if (indexToRemove >= 0) {
+            barDealsList.removeAt(indexToRemove)
+            notifyItemRemoved(indexToRemove)
         }
-        indexToRemove?.let {
-            barDealsList.removeAt(it)
-            notifyItemRemoved(it)
-        }
-
     }
 
     class DealPreviewHolder(val view: DealPreview) : RecyclerView.ViewHolder(view)

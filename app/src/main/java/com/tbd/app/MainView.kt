@@ -47,6 +47,8 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Line
     val addBarDialogShows: Observable<Unit> = addBarDialogShowsSubject.hide()
     private val addBarDialogClosesSubject = PublishSubject.create<Unit>()
     val addBarDialogCloses: Observable<Unit> = addBarDialogClosesSubject.hide()
+    private val markerClicksSubject = PublishSubject.create<String>()
+    val markerClicks: Observable<String> = markerClicksSubject.hide()
 
     var lastOpened: Marker? = null
     val markers = mutableListOf<Marker>()
@@ -76,6 +78,7 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Line
             }
             marker.showInfoWindow()
             lastOpened = marker
+            markerClicksSubject.onNext(marker.tag as String)
             true
         })
     }

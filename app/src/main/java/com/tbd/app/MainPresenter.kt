@@ -21,12 +21,12 @@ class MainPresenter(private val mainView: MainView,
 
     var watching = false
 
-
     init {
         mainView.mapReadies.subscribe { mapReady() }
         mainView.mapChanges.subscribe { mapChanged(it) }
         mainView.addBarDialogShows.subscribe { mainView.showAddBarView() }
         mainView.addBarDialogCloses.subscribe { mainView.closeAddBarView() }
+        mainView.markerClicks.subscribe { dealListView.scrollToBar(it) }
 
         dealListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
         dealListView.barClicks.subscribe { mainView.highlightMarker(it) }

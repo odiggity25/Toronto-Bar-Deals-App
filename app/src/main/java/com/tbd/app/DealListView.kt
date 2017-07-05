@@ -24,12 +24,13 @@ class DealListView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     val barFocusChanges: Observable<String> = barFocusChangesSubject.hide()
     val adapter: DealListAdapter
     val barClicks: Observable<String>
+    val layoutManager: LinearLayoutManager
 
     init {
         View.inflate(context, R.layout.view_deal_list, this)
         adapter = DealListAdapter(context, mutableListOf())
         barClicks = adapter.barClicks
-        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager
         val snapHelper = LinearSnapHelper()
@@ -51,5 +52,12 @@ class DealListView(context: Context, attrs: AttributeSet) : FrameLayout(context,
 
     fun removeBar(barDeals: BarDeals) {
         adapter.removeItem(barDeals)
+    }
+
+    fun scrollToBar(barId: String) {
+        val position = adapter.getPosition(barId)
+        if (position >= 0) {
+            recyclerView.smoothScrollToPosition(position)
+        }
     }
 }
