@@ -2,11 +2,13 @@ package com.tbd.app.apis
 
 import com.firebase.geofire.GeoFire
 import com.firebase.geofire.GeoLocation
+import com.firebase.geofire.GeoQuery
+import com.firebase.geofire.GeoQueryEventListener
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.tbd.app.utils.geofire.SimpleGeoQueryEventListener
 import io.reactivex.Completable
-import io.reactivex.Single
+import io.reactivex.Observable
 
 
 /**
@@ -15,6 +17,7 @@ import io.reactivex.Single
 class GeoFireApi {
     private val geoFireRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("geofire/bars")
     private val geoFire: GeoFire = GeoFire(geoFireRef)
+    var geoQuery: GeoQuery? = null
 
     fun setBarLocation(key: String, location: GeoLocation): Completable {
         return Completable.create { completable ->
@@ -28,20 +31,38 @@ class GeoFireApi {
         }
     }
 
-    fun fetchBarIds(geoLocation: GeoLocation, radius: Double): Single<Set<String>> {
-        val geoQuery = geoFire.queryAtLocation(geoLocation, radius)
-        val barIds = mutableSetOf<String>()
-        return Single.create<Set<String>> {
-                    geoQuery.addGeoQueryEventListener(object: SimpleGeoQueryEventListener{
-                        override fun onGeoQueryReady() {
-                            it.onSuccess(barIds)
-                        }
+    fun watchBarIds(geoLocation: GeoLocation, radius: Double): Observable<GeoChange> {
+        geoQuery = geoFire.queryAtLocation(geoLocation, radius/1000)
+        return Observable.create<GeoChange> {
+                    geoQuery?.addGeoQueryEventListener(object: GeoQueryEventListener {
 
                         override fun onKeyEntered(key: String, location: GeoLocation?) {
-                            barIds.add(key)
+                            it.onNext(GeoChange(GeoAction.ENTERED, key))
                         }
+
+                        override fun onKeyExited(key: String) {
+                            it.onNext(GeoChange(GeoAction.EXITED, key))
+                        }
+
+                        override fun onKeyMoved(key: String?, location: GeoLocation?) {
+                            // No-op, this shouldn't happen
+                        }
+
+                        override fun onGeoQueryError(error: DatabaseError) {
+                            it.onError(Exception(error.message))
+                        }
+
+                        override fun onGeoQueryReady() {
+                        }
+
                     })
                 }
     }
+
+    fun updateGeoQuery(geoLocation: GeoLocation, radius: Double) {
+        geoQuery?.setLocation(geoLocation, radius/1000)
+    }
+    enum class GeoAction { ENTERED, EXITED }
+    data class GeoChange(val action: GeoAction, val barId: String)
 
 }

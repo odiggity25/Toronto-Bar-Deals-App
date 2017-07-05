@@ -67,12 +67,20 @@ class BarDealsApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
 
                     }
 
-    fun fetchBarsForLocation(geoLocation: GeoLocation, radius: Double): Single<MutableList<BarDeals>> =
-                geoFireApi.fetchBarIds(geoLocation, radius)
-                        .flatMap {
-                            Observable.fromIterable(it)
-                                    .flatMapSingle { fetchBarDeals(it) }
-                                    .toList()
+    fun watchBarsForLocation(geoLocation: GeoLocation, radius: Double): Observable<BarChange> =
+                geoFireApi.watchBarIds(geoLocation, radius)
+                        .flatMap { geoChange ->
+                            fetchBarDeals(geoChange.barId)
+                                    .flatMapObservable {
+                                        Observable.just(BarChange(geoChange.action, it))
+                                    }
+
                         }
+
+    fun updateWatchLocation(geoLocation: GeoLocation, radius: Double) {
+        geoFireApi.updateGeoQuery(geoLocation, radius)
+    }
+
+    data class BarChange(val action: GeoFireApi.GeoAction, val barDeals: BarDeals)
 
 }

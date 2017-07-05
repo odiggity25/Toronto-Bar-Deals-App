@@ -49,6 +49,7 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Line
     val addBarDialogCloses: Observable<Unit> = addBarDialogClosesSubject.hide()
 
     var lastOpened: Marker? = null
+    val markers = mutableListOf<Marker>()
 
     init {
         View.inflate(context, R.layout.view_main, this)
@@ -138,9 +139,27 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Line
     }
 
     fun addMarker(bar: Bar) {
-        googleMap?.addMarker(MarkerOptions()
-                        .position(LatLng(bar.lat, bar.lng))
-                        .title(bar.name))
+        val marker = googleMap?.addMarker(MarkerOptions()
+                .position(LatLng(bar.lat, bar.lng))
+                .title(bar.name))
+        marker?.let {
+            it.tag = bar.id
+            markers.add(it)
+        }
+    }
+
+    fun removeMarker(bar: Bar) {
+        markers.filter { it.tag == bar.id }
+                .map { it.remove() }
+    }
+
+    fun highlightMarker(barId: String) {
+        lastOpened?.hideInfoWindow()
+        markers.filter { it.tag == barId }
+                .map {
+                    it.showInfoWindow()
+                    lastOpened = it
+                }
     }
 
 }

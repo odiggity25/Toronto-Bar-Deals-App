@@ -1,11 +1,12 @@
 package com.tbd.app
 
 import android.content.Context
+import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import com.tbd.app.models.BarDeals
+import com.tbd.app.utils.dpToPx
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -13,13 +14,15 @@ import java.util.*
  * Shows a preview of the bar and its deals in a card form
  * Created by orrie on 2017-07-04.
  */
-class DealPreview(context: Context) : LinearLayout(context) {
+class DealPreview(context: Context, width: Int) : CardView(context) {
     val barName by lazy { findViewById(R.id.deal_preview_bar_name) as TextView }
     val dealsDescription by lazy { findViewById(R.id.deal_preview_deals) as TextView}
     init {
         View.inflate(context, R.layout.view_deal_preview, this)
-        layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        orientation = HORIZONTAL
+        layoutParams = LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT)
+        radius = dpToPx(6).toFloat()
+        useCompatPadding = true
+        isClickable = true
     }
 
     fun bind(barDeals: BarDeals) {

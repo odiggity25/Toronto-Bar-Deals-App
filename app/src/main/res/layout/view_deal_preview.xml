@@ -5,39 +5,46 @@
     tools:orientation="horizontal"
     tools:layout_width="match_parent"
     tools:layout_height="120dp"
-    android:padding="10dp"
-    tools:parentTag="LinearLayout"
+    tools:parentTag="android.support.v7.widget.CardView"
     >
 
-    <ImageView
-        android:id="@+id/deal_preview_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/ic_local_bar"
-        />
-
     <LinearLayout
-        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginStart="8dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="10dp"
         >
 
-        <TextView
-            android:id="@+id/deal_preview_bar_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="Bar Name"
-            android:textStyle="bold"
+        <ImageView
+            android:id="@+id/deal_preview_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_local_bar"
             />
 
-        <TextView
-            android:id="@+id/deal_preview_deals"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="6dp"
-            tools:text="6pm - 9pm 2 for 1 domestic pints \nAll Day $3 fish tacos "
-            />
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp"
+            >
+
+            <TextView
+                android:id="@+id/deal_preview_bar_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Bar Name"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/deal_preview_deals"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                tools:text="6pm - 9pm 2 for 1 domestic pints \nAll Day $3 fish tacos "
+                />
+        </LinearLayout>
     </LinearLayout>
 </merge>
