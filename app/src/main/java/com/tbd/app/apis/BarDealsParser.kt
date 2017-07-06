@@ -18,8 +18,7 @@ class BarDealsParser {
         val name = dataSnapshot.getStringValue("name") ?: return null
         val lat = dataSnapshot.getDoubleValue("lat") ?: return null
         val lon = dataSnapshot.getDoubleValue("lon") ?: return null
-        val imageUrl = dataSnapshot.getStringValue("image_url")
-        return Bar(id, name, lat, lon, imageUrl)
+        return Bar(id, name, lat, lon)
     }
 
     fun parseDeal(dataSnapshot: DataSnapshot): Deal? {

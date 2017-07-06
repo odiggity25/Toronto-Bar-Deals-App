@@ -24,7 +24,7 @@ class DealListAdapter(private val context: Context,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DealPreviewHolder {
         // -30 so the next item peeks in
-        val dealPreviewHolder = DealPreviewHolder(DealPreview(context, parent.measuredWidth - dpToPx(30)))
+        val dealPreviewHolder = DealPreviewHolder(BarView(context, parent.measuredWidth - dpToPx(30)))
         dealPreviewHolder.view.clicks().subscribe {
             val barId = barDealsList[dealPreviewHolder.adapterPosition].bar.id
             barClicksSubject.onNext(barId)
@@ -55,5 +55,5 @@ class DealListAdapter(private val context: Context,
         }
     }
 
-    class DealPreviewHolder(val view: DealPreview) : RecyclerView.ViewHolder(view)
+    class DealPreviewHolder(val view: BarView) : RecyclerView.ViewHolder(view)
 }

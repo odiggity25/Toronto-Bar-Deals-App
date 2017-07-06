@@ -2,12 +2,17 @@ package com.tbd.app
 
 import android.location.Location
 import com.firebase.geofire.GeoLocation
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
 import com.tbd.app.apis.BarDealsApi
 import com.tbd.app.apis.GeoFireApi
+import com.tbd.app.models.BarDeals
 import com.wattpad.tap.util.rx.autoDispose
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 
@@ -17,7 +22,8 @@ import timber.log.Timber
 class MainPresenter(private val mainView: MainView,
                     private val cancelSignal: Observable<Unit>,
                     private val dealListView: DealListView,
-                    private val barDealsApi: BarDealsApi = BarDealsApi())  {
+                    private val googleApiClient: GoogleApiClient,
+                    private val barDealsApi: BarDealsApi = BarDealsApi(googleApiClient = googleApiClient))  {
 
     var watching = false
 
@@ -51,7 +57,7 @@ class MainPresenter(private val mainView: MainView,
                         when (it.action) {
                             GeoFireApi.GeoAction.ENTERED -> {
                                 mainView.addMarker(it.barDeals.bar)
-                                dealListView.addBar(it.barDeals)
+                                addBarToList(it.barDeals)
                             }
                             GeoFireApi.GeoAction.EXITED -> {
                                 mainView.removeMarker(it.barDeals.bar)
@@ -67,5 +73,17 @@ class MainPresenter(private val mainView: MainView,
         } else {
             barDealsApi.updateWatchLocation(geoLocation, radius)
         }
+    }
+
+    fun addBarToList(barDeals: BarDeals) {
+        Observable.fromCallable {  barDealsApi.imageForBar(barDeals.bar.id) }
+                .map {
+                    barDeals.bar.image = it
+                    Single.just(barDeals)
+                }
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doAfterTerminate { dealListView.addBar(barDeals) }
+                .subscribe ()
     }
 }

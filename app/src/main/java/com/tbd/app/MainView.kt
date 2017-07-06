@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -29,7 +30,9 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by orrie on 2017-06-19.
  */
-class MainView(context: Context, supportFragmentManager: FragmentManager) : LinearLayout(context), OnMapReadyCallback {
+class MainView(context: Context,
+               supportFragmentManager: FragmentManager,
+               googleApiClient: GoogleApiClient) : LinearLayout(context), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
     private val mapFragment by lazy { supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment }
@@ -61,7 +64,7 @@ class MainView(context: Context, supportFragmentManager: FragmentManager) : Line
         addBarClicks.throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe { if (addImage.rotation == 0f) addBarDialogShowsSubject.onNext(Unit)
                 else addBarDialogClosesSubject.onNext(Unit) }
-        MainPresenter(this, detaches(), dealListView)
+        MainPresenter(this, detaches(), dealListView, googleApiClient)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

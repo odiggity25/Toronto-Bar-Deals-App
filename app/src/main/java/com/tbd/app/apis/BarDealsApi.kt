@@ -1,6 +1,9 @@
 package com.tbd.app.apis
 
+import android.graphics.Bitmap
 import com.firebase.geofire.GeoLocation
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.places.Places
 import com.tbd.app.models.Bar
 import com.tbd.app.models.BarDeals
 import com.tbd.app.models.Deal
@@ -14,7 +17,8 @@ import io.reactivex.Single
  */
 class BarDealsApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                   private val barDealsParser: BarDealsParser = BarDealsParser(),
-                  private val geoFireApi: GeoFireApi = GeoFireApi()) {
+                  private val geoFireApi: GeoFireApi = GeoFireApi(),
+                  private val googleApiClient: GoogleApiClient? = null) {
 
     fun addBarDeal(bar: Bar, deal: Deal): Completable =
             rxFirebaseDb.valueExists("bars/${bar.id}")
@@ -34,8 +38,7 @@ class BarDealsApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                     mapOf(
                             "name" to bar.name,
                             "lat" to bar.lat,
-                            "lon" to bar.lng,
-                            "image_url" to bar.imageUrl
+                            "lon" to bar.lng
                     ))
                     .andThen (
                         geoFireApi.setBarLocation(bar.id, GeoLocation(bar.lat, bar.lng))
@@ -82,5 +85,16 @@ class BarDealsApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
     }
 
     data class BarChange(val action: GeoFireApi.GeoAction, val barDeals: BarDeals)
+
+    fun imageForBar(barId: String): Bitmap? {
+        if (googleApiClient == null) {
+            return null
+        }
+        val result = Places.GeoDataApi.getPlacePhotos(googleApiClient, barId).await()
+        if (result != null && result.status.isSuccess) {
+            return result.photoMetadata[0].getPhoto(googleApiClient).await().bitmap
+        }
+        return null
+    }
 
 }
