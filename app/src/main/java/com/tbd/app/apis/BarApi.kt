@@ -87,14 +87,16 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
     data class BarChange(val action: GeoFireApi.GeoAction, val bar: Bar)
 
     fun imageForBar(barId: String): Bitmap? {
+        var bitmap: Bitmap? = null
         if (googleApiClient == null) {
             return null
         }
         val result = Places.GeoDataApi.getPlacePhotos(googleApiClient, barId).await()
-        if (result != null && result.status.isSuccess) {
-            return result.photoMetadata[0].getPhoto(googleApiClient).await().bitmap
+        if (result?.status.isSuccess) {
+            bitmap = result.photoMetadata[0].getPhoto(googleApiClient).await().bitmap
         }
-        return null
+        result?.photoMetadata?.release()
+        return bitmap
     }
 
 }
