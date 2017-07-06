@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.tbd.app.models.BarDeals
+import com.tbd.app.models.Bar
 import com.tbd.app.utils.dpToPx
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Shows a preview of the bar and its deals in a card form
+ * Shows a preview of the barMeta and its deals in a card form
  * Created by orrie on 2017-07-04.
  */
 class BarView(context: Context, width: Int) : CardView(context) {
@@ -27,10 +27,10 @@ class BarView(context: Context, width: Int) : CardView(context) {
         isClickable = true
     }
 
-    fun bind(barDeals: BarDeals) {
-        barName.text = barDeals.bar.name
+    fun bind(bar: Bar) {
+        barName.text = bar.barMeta.name
         var dealText = ""
-        barDeals.deals.forEach {
+        bar.deals.forEach {
             if (it.allDay) {
                 dealText = dealText.plus("All day")
             } else {
@@ -45,7 +45,7 @@ class BarView(context: Context, width: Int) : CardView(context) {
                     .plus("\n")
         }
         dealsDescription.text = dealText
-        barDeals.bar.image?.let {
+        bar.barMeta.image?.let {
             barImage.setImageBitmap(it)
         }
     }

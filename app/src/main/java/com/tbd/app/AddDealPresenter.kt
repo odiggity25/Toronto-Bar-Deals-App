@@ -2,8 +2,8 @@ package com.tbd.app
 
 import android.app.FragmentManager
 import com.google.android.gms.location.places.Place
-import com.tbd.app.apis.BarDealsApi
-import com.tbd.app.models.Bar
+import com.tbd.app.apis.BarApi
+import com.tbd.app.models.BarMeta
 import com.tbd.app.models.Deal
 import io.reactivex.Observable
 import timber.log.Timber
@@ -15,7 +15,7 @@ import java.util.*
 class AddDealPresenter(val addDealView: AddDealView,
                        val fragmentManager: FragmentManager,
                        detaches: Observable<Unit>,
-                       barDealsApi: BarDealsApi = BarDealsApi()) {
+                       barApi: BarApi = BarApi()) {
     var place: Place? = null
     var startTime: Date? = null
     var endTime: Date? = null
@@ -53,11 +53,11 @@ class AddDealPresenter(val addDealView: AddDealView,
                 return@subscribe
             }
 
-            val bar = Bar(finalPlace.id, finalPlace.name.toString(), finalPlace.latLng.latitude, finalPlace.latLng.longitude, null)
+            val bar = BarMeta(finalPlace.id, finalPlace.name.toString(), finalPlace.latLng.latitude, finalPlace.latLng.longitude, null)
             val deal = Deal("", daysAvailable, mutableSetOf(), description, allDay, startTime?.time, endTime?.time)
-            barDealsApi.addBarDeal(bar, deal).subscribe({
-                Timber.i("added bar")
-            }, { e -> Timber.e("failed to add bar: $e")})
+            barApi.addBarDeal(bar, deal).subscribe({
+                Timber.i("added barMeta")
+            }, { e -> Timber.e("failed to add barMeta: $e")})
             addDealView.showSubmissionSuccess()
             addDealView.closeView()
         }

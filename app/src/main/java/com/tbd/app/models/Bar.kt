@@ -1,6 +1,5 @@
 package com.tbd.app.models
 
-import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
 import paperparcel.PaperParcel
@@ -9,11 +8,8 @@ import paperparcel.PaperParcel
  * Created by orrie on 2017-06-21.
  */
 @PaperParcel
-class Bar(val id: String,
-          val name: String,
-          val lat: Double,
-          val lng: Double,
-          var image: Bitmap? = null) : Parcelable {
+class Bar(val barMeta: BarMeta,
+          val deals: List<Deal>) : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         PaperParcelBar.writeToParcel(this, dest, flags)

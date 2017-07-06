@@ -1,7 +1,7 @@
 package com.tbd.app.apis
 
 import com.google.firebase.database.DataSnapshot
-import com.tbd.app.models.Bar
+import com.tbd.app.models.BarMeta
 import com.tbd.app.models.Deal
 import com.tbd.app.utils.firebase.getBooleanValue
 import com.tbd.app.utils.firebase.getDoubleValue
@@ -11,14 +11,14 @@ import com.tbd.app.utils.firebase.getStringValue
 /**
  * Created by orrie on 2017-06-22.
  */
-class BarDealsParser {
+class BarParser {
 
-    fun parseBar(dataSnapshot: DataSnapshot): Bar? {
+    fun parseBarMeta(dataSnapshot: DataSnapshot): BarMeta? {
         val id = dataSnapshot.key
         val name = dataSnapshot.getStringValue("name") ?: return null
         val lat = dataSnapshot.getDoubleValue("lat") ?: return null
         val lon = dataSnapshot.getDoubleValue("lon") ?: return null
-        return Bar(id, name, lat, lon)
+        return BarMeta(id, name, lat, lon)
     }
 
     fun parseDeal(dataSnapshot: DataSnapshot): Deal? {
@@ -32,7 +32,7 @@ class BarDealsParser {
         return Deal(id, daysOfWeek, tags, description, allDay, startTime, endTime)
     }
 
-    fun parseDeals(dataSnapshot: DataSnapshot): MutableList<Deal> {
+    fun parseBar(dataSnapshot: DataSnapshot): MutableList<Deal> {
         val deals = mutableListOf<Deal>()
         dataSnapshot.children
                 .forEach {

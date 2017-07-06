@@ -5,9 +5,9 @@ import com.firebase.geofire.GeoLocation
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
-import com.tbd.app.apis.BarDealsApi
+import com.tbd.app.apis.BarApi
 import com.tbd.app.apis.GeoFireApi
-import com.tbd.app.models.BarDeals
+import com.tbd.app.models.Bar
 import com.wattpad.tap.util.rx.autoDispose
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -23,7 +23,7 @@ class MainPresenter(private val mainView: MainView,
                     private val cancelSignal: Observable<Unit>,
                     private val dealListView: DealListView,
                     private val googleApiClient: GoogleApiClient,
-                    private val barDealsApi: BarDealsApi = BarDealsApi(googleApiClient = googleApiClient))  {
+                    private val barApi: BarApi = BarApi(googleApiClient = googleApiClient))  {
 
     var watching = false
 
@@ -52,38 +52,38 @@ class MainPresenter(private val mainView: MainView,
         val geoLocation = GeoLocation(latLngBounds.center.latitude, latLngBounds.center.longitude)
 
         if (!watching) {
-            barDealsApi.watchBarsForLocation(geoLocation, radius)
+            barApi.watchBarsForLocation(geoLocation, radius)
                     .subscribe({
                         when (it.action) {
                             GeoFireApi.GeoAction.ENTERED -> {
-                                mainView.addMarker(it.barDeals.bar)
-                                addBarToList(it.barDeals)
+                                mainView.addMarker(it.bar.barMeta)
+                                addBarToList(it.bar)
                             }
                             GeoFireApi.GeoAction.EXITED -> {
-                                mainView.removeMarker(it.barDeals.bar)
-                                dealListView.removeBar(it.barDeals)
+                                mainView.removeMarker(it.bar.barMeta)
+                                dealListView.removeBar(it.bar)
                             }
                         }
                     }, {
                         Timber.e("Failed to retrieve bars ${it.message}")
                     }, {
-                        Timber.i("On complete bar watching")
+                        Timber.i("On complete barMeta watching")
                     }).autoDispose(cancelSignal)
             watching = true
         } else {
-            barDealsApi.updateWatchLocation(geoLocation, radius)
+            barApi.updateWatchLocation(geoLocation, radius)
         }
     }
 
-    fun addBarToList(barDeals: BarDeals) {
-        Observable.fromCallable {  barDealsApi.imageForBar(barDeals.bar.id) }
+    fun addBarToList(bar: Bar) {
+        Observable.fromCallable {  barApi.imageForBar(bar.barMeta.id) }
                 .map {
-                    barDeals.bar.image = it
-                    Single.just(barDeals)
+                    bar.barMeta.image = it
+                    Single.just(bar)
                 }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doAfterTerminate { dealListView.addBar(barDeals) }
+                .doAfterTerminate { dealListView.addBar(bar) }
                 .subscribe ()
     }
 }

@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxbinding2.view.detaches
-import com.tbd.app.models.Bar
+import com.tbd.app.models.BarMeta
 import com.tbd.app.utils.hideKeyboard
 import com.tbd.app.utils.pxToDp
 import com.tbd.app.utils.view.throttleClicks
@@ -144,7 +144,7 @@ class MainView(context: Context,
         }
     }
 
-    fun addMarker(bar: Bar) {
+    fun addMarker(bar: BarMeta) {
         val marker = googleMap?.addMarker(MarkerOptions()
                 .position(LatLng(bar.lat, bar.lng))
                 .title(bar.name))
@@ -154,7 +154,7 @@ class MainView(context: Context,
         }
     }
 
-    fun removeMarker(bar: Bar) {
+    fun removeMarker(bar: BarMeta) {
         markers.filter { it.tag == bar.id }
                 .map { it.remove() }
     }

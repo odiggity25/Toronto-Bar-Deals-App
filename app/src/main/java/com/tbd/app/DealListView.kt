@@ -9,13 +9,13 @@ import android.view.View
 import android.widget.FrameLayout
 import com.jakewharton.rxbinding2.support.v7.widget.scrollStateChanges
 import com.jakewharton.rxbinding2.view.detaches
-import com.tbd.app.models.BarDeals
+import com.tbd.app.models.Bar
 import com.wattpad.tap.util.rx.autoDispose
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 /**
- * View that shows the BarDeals in a horizontal recyclerview
+ * View that shows the Bars in a horizontal recyclerview
  * Created by orrie on 2017-07-04.
  */
 class DealListView(context: Context,
@@ -23,13 +23,13 @@ class DealListView(context: Context,
     private val recyclerView by lazy { findViewById(R.id.deal_list_recyclerview) as RecyclerView }
     private val barFocusChangesSubject = PublishSubject.create<String>()
     val barFocusChanges: Observable<String> = barFocusChangesSubject.hide()
-    val adapter: DealListAdapter
+    val adapter: BarAdapter
     val barClicks: Observable<String>
     val layoutManager: LinearLayoutManager
 
     init {
         View.inflate(context, R.layout.view_deal_list, this)
-        adapter = DealListAdapter(context, mutableListOf())
+        adapter = BarAdapter(context, mutableListOf())
         barClicks = adapter.barClicks
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
@@ -42,17 +42,17 @@ class DealListView(context: Context,
                 .filter { it >= 0 }
                 .map { adapter.getItem(it) }
                 .subscribe {
-                    barFocusChangesSubject.onNext(it.bar.id)
+                    barFocusChangesSubject.onNext(it.barMeta.id)
                 }
                 .autoDispose(detaches())
     }
 
-    fun addBar(barDeals: BarDeals) {
-        adapter.addItem(barDeals)
+    fun addBar(bar: Bar) {
+        adapter.addItem(bar)
     }
 
-    fun removeBar(barDeals: BarDeals) {
-        adapter.removeItem(barDeals)
+    fun removeBar(bar: Bar) {
+        adapter.removeItem(bar)
     }
 
     fun scrollToBar(barId: String) {
