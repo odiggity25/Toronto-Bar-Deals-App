@@ -14,6 +14,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.*
 
 
 /**
@@ -21,7 +22,7 @@ import timber.log.Timber
  */
 class MainPresenter(private val mainView: MainView,
                     private val cancelSignal: Observable<Unit>,
-                    private val dealListView: DealListView,
+                    private val barListView: BarListView,
                     private val googleApiClient: GoogleApiClient,
                     private val barApi: BarApi = BarApi(googleApiClient = googleApiClient))  {
 
@@ -32,10 +33,13 @@ class MainPresenter(private val mainView: MainView,
         mainView.mapChanges.subscribe { mapChanged(it) }
         mainView.addBarDialogShows.subscribe { mainView.showAddBarView() }
         mainView.addBarDialogCloses.subscribe { mainView.closeAddBarView() }
-        mainView.markerClicks.subscribe { dealListView.scrollToBar(it) }
+        mainView.markerClicks.subscribe { barListView.scrollToBar(it) }
+        mainView.moderateClicks.subscribe { mainView.showModerateActivity() }
 
-        dealListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
-        dealListView.barClicks.subscribe { mainView.highlightMarker(it) }
+        barListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
+        barListView.barClicks.subscribe { mainView.highlightMarker(it.barMeta.id) }
+
+        mainView.setDayOfWeek(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
     }
 
     fun mapReady() {
@@ -61,7 +65,7 @@ class MainPresenter(private val mainView: MainView,
                             }
                             GeoFireApi.GeoAction.EXITED -> {
                                 mainView.removeMarker(it.bar.barMeta)
-                                dealListView.removeBar(it.bar)
+                                barListView.removeBar(it.bar)
                             }
                         }
                     }, {
@@ -83,7 +87,7 @@ class MainPresenter(private val mainView: MainView,
                 }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doAfterTerminate { dealListView.addBar(bar) }
+                .doAfterTerminate { barListView.addBar(bar) }
                 .subscribe ()
     }
 }

@@ -54,8 +54,8 @@ class AddDealPresenter(val addDealView: AddDealView,
             }
 
             val bar = BarMeta(finalPlace.id, finalPlace.name.toString(), finalPlace.latLng.latitude, finalPlace.latLng.longitude, null)
-            val deal = Deal("", daysAvailable, mutableSetOf(), description, allDay, startTime?.time, endTime?.time)
-            barApi.addBarDeal(bar, deal).subscribe({
+            val deal = Deal("", daysAvailable, mutableSetOf(), description, allDay, startTime?.time, endTime?.time, bar.id)
+            barApi.addUnmoderatedBarDeal(bar, deal).subscribe({
                 Timber.i("added barMeta")
             }, { e -> Timber.e("failed to add barMeta: $e")})
             addDealView.showSubmissionSuccess()

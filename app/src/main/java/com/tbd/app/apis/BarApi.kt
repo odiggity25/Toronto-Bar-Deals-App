@@ -20,33 +20,41 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
              private val geoFireApi: GeoFireApi = GeoFireApi(),
              private val googleApiClient: GoogleApiClient? = null) {
 
-    fun addBarDeal(bar: BarMeta, deal: Deal): Completable =
-            rxFirebaseDb.valueExists("bars/${bar.id}")
+    fun addUnmoderatedBarDeal(barMeta: BarMeta, deal: Deal): Completable =
+            rxFirebaseDb.valueExists("bars/${barMeta.id}")
                     .flatMapCompletable { exists ->
                         if (!exists) {
-                            addBar(bar)
+                            addBar(barMeta)
                         } else {
                             Completable.complete()
                         }
                     }
                     .andThen (
-                        addDeal(bar, deal)
+                        addDeal(barMeta, deal, false)
                     )
 
-    fun addBar(bar: BarMeta): Completable =
-            rxFirebaseDb.setValue("bars/${bar.id}",
+    /**
+     * Note: The geo cordinates won't be saved until the deal is verified, so that it won't show up
+     * on the map
+     */
+    fun addBar(barMeta: BarMeta): Completable =
+            rxFirebaseDb.setValue("bars/${barMeta.id}",
                     mapOf(
-                            "name" to bar.name,
-                            "lat" to bar.lat,
-                            "lon" to bar.lng
+                            "name" to barMeta.name,
+                            "lat" to barMeta.lat,
+                            "lon" to barMeta.lng
                     ))
-                    .andThen (
-                        geoFireApi.setBarLocation(bar.id, GeoLocation(bar.lat, bar.lng))
-                    )
 
-    fun addDeal(bar: BarMeta, deal: Deal): Completable {
-        val key = rxFirebaseDb.getKey("deals/${bar.id}/")
-        return rxFirebaseDb.setValue("deals/${bar.id}/$key", mapOf(
+    fun approveBarDeal(barMeta: BarMeta, deal: Deal): Completable {
+        return removeDeal(barMeta, deal, false)
+                .andThen ( addDeal(barMeta, deal, true))
+                .andThen ( geoFireApi.setBarLocation(barMeta.id, GeoLocation(barMeta.lat, barMeta.lng)) )
+    }
+
+    fun addDeal(bar: BarMeta, deal: Deal, moderated: Boolean): Completable {
+        val root = if (moderated) "deals" else "unmoderated_deals"
+        val key = rxFirebaseDb.getKey("$root/${bar.id}/")
+        return rxFirebaseDb.setValue("$root/${bar.id}/$key", mapOf(
                                         "days_of_week" to deal.daysOfWeek.toList(),
                                         "tags" to deal.tags.toList(),
                                         "description" to deal.description,
@@ -56,11 +64,16 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                                 ))
     }
 
+    fun removeDeal(bar: BarMeta, deal: Deal, moderated: Boolean): Completable {
+        val root = if (moderated) "unmoderated_deals" else "deals"
+        return rxFirebaseDb.removeValue("$root/${bar.id}/${deal.id}")
+    }
+
     fun fetchBarMeta(id: String): Single<BarMeta> =
             rxFirebaseDb.fetch("bars/$id", barParser::parseBarMeta)
 
     fun fetchDeals(barId: String): Single<MutableList<Deal>> =
-            rxFirebaseDb.fetch("deals/$barId/", barParser::parseBar)
+            rxFirebaseDb.fetch("deals/$barId/", {barParser.parseDeals(barId, it)})
 
     fun fetchBar(id: String): Single<Bar> =
             fetchBarMeta(id)
@@ -97,6 +110,15 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
         }
         result?.photoMetadata?.release()
         return bitmap
+    }
+
+    fun fetchUnmoderatedDeals(): Observable<Bar> {
+        return rxFirebaseDb.fetch("unmoderated_deals", barParser::parseUnmoderatedDeals)
+                .flatMapObservable { Observable.fromIterable(it) }
+                .flatMap { deal ->
+                    fetchBarMeta(deal.barId)
+                            .flatMapObservable { Observable.just(Bar(it, listOf(deal))) }
+                }
     }
 
 }

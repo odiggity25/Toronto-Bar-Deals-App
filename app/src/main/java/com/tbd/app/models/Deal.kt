@@ -14,7 +14,8 @@ class Deal(val id: String,
            val description: String,
            val allDay: Boolean,
            val startTime: Long?,
-           val endTime: Long?) : Parcelable {
+           val endTime: Long?,
+           val barId: String) : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         PaperParcelDeal.writeToParcel(this, dest, flags)

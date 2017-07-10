@@ -18,17 +18,16 @@ import io.reactivex.subjects.PublishSubject
  * View that shows the Bars in a horizontal recyclerview
  * Created by orrie on 2017-07-04.
  */
-class DealListView(context: Context,
-                   attrs: AttributeSet) : FrameLayout(context, attrs){
+class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs){
     private val recyclerView by lazy { findViewById(R.id.deal_list_recyclerview) as RecyclerView }
     private val barFocusChangesSubject = PublishSubject.create<String>()
     val barFocusChanges: Observable<String> = barFocusChangesSubject.hide()
     val adapter: BarAdapter
-    val barClicks: Observable<String>
+    val barClicks: Observable<Bar>
     val layoutManager: LinearLayoutManager
 
     init {
-        View.inflate(context, R.layout.view_deal_list, this)
+        View.inflate(context, R.layout.view_bar_list, this)
         adapter = BarAdapter(context, mutableListOf())
         barClicks = adapter.barClicks
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

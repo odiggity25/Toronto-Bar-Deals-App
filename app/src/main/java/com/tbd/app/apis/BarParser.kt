@@ -21,7 +21,7 @@ class BarParser {
         return BarMeta(id, name, lat, lon)
     }
 
-    fun parseDeal(dataSnapshot: DataSnapshot): Deal? {
+    fun parseDeal(barId: String, dataSnapshot: DataSnapshot): Deal? {
         val id = dataSnapshot.key
         val daysOfWeek = parseDaysOfWeek(dataSnapshot.child("days_of_week"))
         val tags = parseDealTags(dataSnapshot.child("tags"))
@@ -29,18 +29,32 @@ class BarParser {
         val allDay = dataSnapshot.getBooleanValue("all_day")
         val startTime = dataSnapshot.getLongValue("start_time")
         val endTime = dataSnapshot.getLongValue("end_time")
-        return Deal(id, daysOfWeek, tags, description, allDay, startTime, endTime)
+        return Deal(id, daysOfWeek, tags, description, allDay, startTime, endTime, barId)
     }
 
-    fun parseBar(dataSnapshot: DataSnapshot): MutableList<Deal> {
+    fun parseDeals(barId: String, dataSnapshot: DataSnapshot): MutableList<Deal> {
         val deals = mutableListOf<Deal>()
         dataSnapshot.children
                 .forEach {
-                    val deal = parseDeal(it)
+                    val deal = parseDeal(barId, it)
                     deal?.let { deals.add(it) }
                 }
         return deals
     }
+
+    fun parseUnmoderatedDeals(dataSnapshot: DataSnapshot): MutableList<Deal> {
+            val deals = mutableListOf<Deal>()
+            dataSnapshot.children
+                    .forEach {
+                        val barId = it.key
+                        it.children.forEach {
+                            val deal = parseDeal(barId, it)
+                            deal?.let { deals.add(it) }
+                        }
+
+                    }
+            return deals
+        }
 
     fun parseDealTags(dataSnapshot: DataSnapshot): MutableSet<String> {
         val tags = mutableSetOf<String>()

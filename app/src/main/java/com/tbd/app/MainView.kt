@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxbinding2.view.detaches
 import com.tbd.app.models.BarMeta
+import com.tbd.app.moderate.ModerateActivity
 import com.tbd.app.utils.hideKeyboard
 import com.tbd.app.utils.pxToDp
 import com.tbd.app.utils.view.throttleClicks
@@ -37,10 +38,12 @@ class MainView(context: Context,
     private var googleMap: GoogleMap? = null
     private val mapFragment by lazy { supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment }
     val addBarClicks by lazy { findViewById(R.id.main_add_bar).throttleClicks() }
+    val moderateClicks by lazy { findViewById(R.id.main_moderate).throttleClicks() }
     private val addImage by lazy { findViewById(R.id.main_add_bar) as ImageView }
     private var addDealView: AddDealView? = null
     private val container by lazy { findViewById(R.id.main_container) as FrameLayout }
-    val dealListView by lazy { findViewById(R.id.deal_list_view) as DealListView }
+    private val dealListView by lazy { findViewById(R.id.deal_list_view) as BarListView }
+    private val dayOfWeekPicker by lazy { findViewById(R.id.main_day_of_week_picker) as DayOfWeekPicker }
 
     private val mapReadiesSubject = PublishSubject.create<Unit>()
     val mapReadies: Observable<Unit> = mapReadiesSubject.hide()
@@ -65,6 +68,7 @@ class MainView(context: Context,
                 .subscribe { if (addImage.rotation == 0f) addBarDialogShowsSubject.onNext(Unit)
                 else addBarDialogClosesSubject.onNext(Unit) }
         MainPresenter(this, detaches(), dealListView, googleApiClient)
+        findViewById(R.id.main_moderate).visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -166,6 +170,14 @@ class MainView(context: Context,
                     it.showInfoWindow()
                     lastOpened = it
                 }
+    }
+
+    fun showModerateActivity() {
+        context.startActivity(ModerateActivity.newIntent(context))
+    }
+
+    fun setDayOfWeek(day: Int) {
+        dayOfWeekPicker.setDay(day)
     }
 
 }

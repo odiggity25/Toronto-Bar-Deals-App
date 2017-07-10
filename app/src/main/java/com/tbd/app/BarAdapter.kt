@@ -13,21 +13,25 @@ import io.reactivex.subjects.PublishSubject
  * Created by orrie on 2017-07-04.
  */
 class BarAdapter(private val context: Context,
-                 private val bars: MutableList<Bar>) : RecyclerView.Adapter<BarAdapter.BarHolder>() {
+                 private val bars: MutableList<Bar>,
+                 private var itemHeight: Int = -1) : RecyclerView.Adapter<BarAdapter.BarHolder>() {
 
-    private val barClicksSubject = PublishSubject.create<String>()
-    val barClicks: Observable<String> = barClicksSubject.hide()
+    private val barClicksSubject = PublishSubject.create<Bar>()
+    val barClicks: Observable<Bar> = barClicksSubject.hide()
 
     override fun onBindViewHolder(holder: BarHolder?, position: Int) {
         holder?.view?.bind(bars[position])
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BarHolder {
-        // -30 so the next item peeks in
-        val barHolder = BarHolder(BarView(context, parent.measuredWidth - dpToPx(30)))
+        if (itemHeight < 0) {
+            itemHeight = parent.height
+        }
+        // -36 dp so the next item peeks in
+        val barHolder = BarHolder(BarView(context, parent.measuredWidth - dpToPx(36), itemHeight))
         barHolder.view.clicks().subscribe {
-            val barId = bars[barHolder.adapterPosition].barMeta.id
-            barClicksSubject.onNext(barId)
+            val bar = bars[barHolder.adapterPosition]
+            barClicksSubject.onNext(bar)
         }
         return barHolder
     }

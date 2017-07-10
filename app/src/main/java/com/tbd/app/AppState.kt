@@ -3,6 +3,7 @@ package com.tbd.app
 import android.app.Application
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.iid.FirebaseInstanceId
 import com.wattpad.tap.util.Login
 import timber.log.Timber
 
@@ -21,5 +22,6 @@ class AppState : Application() {
         }
 
         Timber.plant(Timber.DebugTree())
+        Timber.d("Firebase token is ${FirebaseInstanceId.getInstance().token}")
     }
 }
