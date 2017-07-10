@@ -60,4 +60,8 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             recyclerView.smoothScrollToPosition(position)
         }
     }
+
+    fun setDayOfWeek(day: Int) {
+        adapter.filterByDay(day)
+    }
 }

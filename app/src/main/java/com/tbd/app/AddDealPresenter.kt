@@ -54,6 +54,9 @@ class AddDealPresenter(val addDealView: AddDealView,
             }
 
             val bar = BarMeta(finalPlace.id, finalPlace.name.toString(), finalPlace.latLng.latitude, finalPlace.latLng.longitude, null)
+            if (daysAvailable.isEmpty()) {
+                daysAvailable.addAll(listOf(0,1,2,3,4,5,6))
+            }
             val deal = Deal("", daysAvailable, mutableSetOf(), description, allDay, startTime?.time, endTime?.time, bar.id)
             barApi.addUnmoderatedBarDeal(bar, deal).subscribe({
                 Timber.i("added barMeta")

@@ -26,7 +26,7 @@ class ModeratePresenter(moderateView: ModerateView,
             barApi.approveBarDeal(it.barMeta, it.deals[0]).subscribe({ moderateView.removeBar(it) },{})
         }
         moderateView.dealDenies.subscribe {
-            barApi.removeDeal(it.barMeta, it.deals[0], true).subscribe({ moderateView.removeBar(it) },{})
+            barApi.removeDeal(it.barMeta, it.deals[0], false).subscribe({ moderateView.removeBar(it) },{})
         }
     }
 

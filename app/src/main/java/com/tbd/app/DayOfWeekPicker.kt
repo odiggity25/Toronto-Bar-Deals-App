@@ -86,13 +86,34 @@ class DayOfWeekPicker(context: Context, attrs: AttributeSet) : LinearLayout(cont
 
     fun setDay(day: Int) {
         when(day) {
-            0 -> day0.isSelected = true
-            1 -> day1.isSelected = true
-            2 -> day2.isSelected = true
-            3 -> day3.isSelected = true
-            4 -> day4.isSelected = true
-            5 -> day5.isSelected = true
-            6 -> day6.isSelected = true
+            0 -> {
+                day0.isSelected = true
+                unselectPrevious(day0)
+            }
+            1 -> {
+                day1.isSelected = true
+                unselectPrevious(day1)
+            }
+            2 ->  {
+                day2.isSelected = true
+                unselectPrevious(day2)
+            }
+            3 -> {
+                day3.isSelected = true
+                unselectPrevious(day3)
+            }
+            4 -> {
+                day4.isSelected = true
+                unselectPrevious(day4)
+            }
+            5 -> {
+                day5.isSelected = true
+                unselectPrevious(day5)
+            }
+            6 -> {
+                day6.isSelected = true
+                unselectPrevious(day6)
+            }
         }
     }
 

@@ -18,9 +18,11 @@ class BarAdapter(private val context: Context,
 
     private val barClicksSubject = PublishSubject.create<Bar>()
     val barClicks: Observable<Bar> = barClicksSubject.hide()
+    private var barsFiltered = mutableListOf<Bar>()
+    var selectedDayOfWeek = -1
 
     override fun onBindViewHolder(holder: BarHolder?, position: Int) {
-        holder?.view?.bind(bars[position])
+        holder?.view?.bind(barsFiltered[position])
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BarHolder {
@@ -30,33 +32,43 @@ class BarAdapter(private val context: Context,
         // -36 dp so the next item peeks in
         val barHolder = BarHolder(BarView(context, parent.measuredWidth - dpToPx(36), itemHeight))
         barHolder.view.clicks().subscribe {
-            val bar = bars[barHolder.adapterPosition]
+            val bar = barsFiltered[barHolder.adapterPosition]
             barClicksSubject.onNext(bar)
         }
         return barHolder
     }
 
     override fun getItemCount(): Int {
-        return bars.size
+        return barsFiltered.size
     }
 
     fun getItem(position: Int): Bar =
-            bars[position]
+            barsFiltered[position]
 
     fun getPosition(barId: String): Int =
-        bars.indexOfFirst { it.barMeta.id == barId }
+        barsFiltered.indexOfFirst { it.barMeta.id == barId }
 
     fun addItem(bar: Bar) {
         bars.add(bar)
-        notifyItemInserted(bars.lastIndex)
+        if (selectedDayOfWeek == -1 || !bar.deals.filter { it.daysOfWeek.contains(selectedDayOfWeek) }.isEmpty()) {
+            barsFiltered.add(bar)
+            notifyItemInserted(bars.lastIndex)
+        }
     }
 
     fun removeItem(barToRemove: Bar) {
-        var indexToRemove = bars.indexOfFirst { it.barMeta.id == barToRemove.barMeta.id }
+        var indexToRemove = barsFiltered.indexOfFirst { it.barMeta.id == barToRemove.barMeta.id }
         if (indexToRemove >= 0) {
-            bars.removeAt(indexToRemove)
+            barsFiltered.removeAt(indexToRemove)
             notifyItemRemoved(indexToRemove)
         }
+        bars.remove(barToRemove)
+    }
+
+    fun filterByDay(day: Int) {
+        selectedDayOfWeek = day
+        barsFiltered = bars.filter { !it.deals.filter { it.daysOfWeek.contains(day) }.isEmpty() } as MutableList<Bar>
+        notifyDataSetChanged()
     }
 
     class BarHolder(val view: BarView) : RecyclerView.ViewHolder(view)

@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxbinding2.view.detaches
-import com.tbd.app.models.BarMeta
+import com.tbd.app.models.Bar
 import com.tbd.app.moderate.ModerateActivity
 import com.tbd.app.utils.hideKeyboard
 import com.tbd.app.utils.pxToDp
@@ -42,8 +42,9 @@ class MainView(context: Context,
     private val addImage by lazy { findViewById(R.id.main_add_bar) as ImageView }
     private var addDealView: AddDealView? = null
     private val container by lazy { findViewById(R.id.main_container) as FrameLayout }
-    private val dealListView by lazy { findViewById(R.id.deal_list_view) as BarListView }
+    private val barListView by lazy { findViewById(R.id.deal_list_view) as BarListView }
     private val dayOfWeekPicker by lazy { findViewById(R.id.main_day_of_week_picker) as DayOfWeekPicker }
+    val dayClicks: Observable<DayOfWeekPicker.DaySelected> by lazy { dayOfWeekPicker.dayClicks }
 
     private val mapReadiesSubject = PublishSubject.create<Unit>()
     val mapReadies: Observable<Unit> = mapReadiesSubject.hide()
@@ -56,6 +57,9 @@ class MainView(context: Context,
     private val markerClicksSubject = PublishSubject.create<String>()
     val markerClicks: Observable<String> = markerClicksSubject.hide()
 
+    private val bars = mutableListOf<Bar>()
+    var selectedDayOfWeek = 0
+
     var lastOpened: Marker? = null
     val markers = mutableListOf<Marker>()
 
@@ -67,7 +71,7 @@ class MainView(context: Context,
         addBarClicks.throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe { if (addImage.rotation == 0f) addBarDialogShowsSubject.onNext(Unit)
                 else addBarDialogClosesSubject.onNext(Unit) }
-        MainPresenter(this, detaches(), dealListView, googleApiClient)
+        MainPresenter(this, detaches(), barListView, googleApiClient)
         findViewById(R.id.main_moderate).visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
     }
 
@@ -148,18 +152,21 @@ class MainView(context: Context,
         }
     }
 
-    fun addMarker(bar: BarMeta) {
-        val marker = googleMap?.addMarker(MarkerOptions()
-                .position(LatLng(bar.lat, bar.lng))
-                .title(bar.name))
-        marker?.let {
-            it.tag = bar.id
-            markers.add(it)
+    fun addMarker(bar: Bar) {
+        bars.add(bar)
+        if (!bar.deals.filter { it.daysOfWeek.contains(selectedDayOfWeek) }.isEmpty()) {
+            val marker = googleMap?.addMarker(MarkerOptions()
+                    .position(LatLng(bar.barMeta.lat, bar.barMeta.lng))
+                    .title(bar.barMeta.name))
+            marker?.let {
+                it.tag = bar.barMeta.id
+                markers.add(it)
+            }
         }
     }
 
-    fun removeMarker(bar: BarMeta) {
-        markers.filter { it.tag == bar.id }
+    fun removeMarker(bar: Bar) {
+        markers.filter { it.tag == bar.barMeta.id }
                 .map { it.remove() }
     }
 
@@ -172,12 +179,21 @@ class MainView(context: Context,
                 }
     }
 
+    fun filterMarkersByDay(day: Int) {
+        googleMap?.clear()
+        val barsFiltered = bars.filter { !it.deals.filter { it.daysOfWeek.contains(day) }.isEmpty() } as MutableList<Bar>
+        barsFiltered.forEach { addMarker(it) }
+    }
+
     fun showModerateActivity() {
         context.startActivity(ModerateActivity.newIntent(context))
     }
 
     fun setDayOfWeek(day: Int) {
-        dayOfWeekPicker.setDay(day)
+        selectedDayOfWeek = day
+        filterMarkersByDay(day)
+        dayOfWeekPicker.setDay(selectedDayOfWeek)
+        barListView.setDayOfWeek(day)
     }
 
 }

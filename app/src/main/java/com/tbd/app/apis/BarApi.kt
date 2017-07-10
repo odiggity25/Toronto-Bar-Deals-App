@@ -65,7 +65,7 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
     }
 
     fun removeDeal(bar: BarMeta, deal: Deal, moderated: Boolean): Completable {
-        val root = if (moderated) "unmoderated_deals" else "deals"
+        val root = if (moderated) "deals" else "unmoderated_deals"
         return rxFirebaseDb.removeValue("$root/${bar.id}/${deal.id}")
     }
 

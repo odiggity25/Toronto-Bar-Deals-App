@@ -35,11 +35,26 @@ class MainPresenter(private val mainView: MainView,
         mainView.addBarDialogCloses.subscribe { mainView.closeAddBarView() }
         mainView.markerClicks.subscribe { barListView.scrollToBar(it) }
         mainView.moderateClicks.subscribe { mainView.showModerateActivity() }
+        mainView.dayClicks
+                .filter { it.selected }
+                .subscribe { (day) ->
+                    mainView.setDayOfWeek(day)
+                }
 
         barListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
         barListView.barClicks.subscribe { mainView.highlightMarker(it.barMeta.id) }
 
-        mainView.setDayOfWeek(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
+        val day = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+            Calendar.MONDAY -> 0
+            Calendar.TUESDAY -> 1
+            Calendar.WEDNESDAY -> 2
+            Calendar.THURSDAY -> 3
+            Calendar.FRIDAY -> 4
+            Calendar.SATURDAY -> 5
+            Calendar.SUNDAY -> 6
+            else -> 0
+        }
+        mainView.setDayOfWeek(day)
     }
 
     fun mapReady() {
@@ -60,11 +75,11 @@ class MainPresenter(private val mainView: MainView,
                     .subscribe({
                         when (it.action) {
                             GeoFireApi.GeoAction.ENTERED -> {
-                                mainView.addMarker(it.bar.barMeta)
+                                mainView.addMarker(it.bar)
                                 addBarToList(it.bar)
                             }
                             GeoFireApi.GeoAction.EXITED -> {
-                                mainView.removeMarker(it.bar.barMeta)
+                                mainView.removeMarker(it.bar)
                                 barListView.removeBar(it.bar)
                             }
                         }
