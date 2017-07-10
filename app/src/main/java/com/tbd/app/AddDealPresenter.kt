@@ -5,6 +5,7 @@ import com.google.android.gms.location.places.Place
 import com.tbd.app.apis.BarApi
 import com.tbd.app.models.BarMeta
 import com.tbd.app.models.Deal
+import com.tbd.app.utils.events.EventManager
 import io.reactivex.Observable
 import timber.log.Timber
 import java.util.*
@@ -60,6 +61,7 @@ class AddDealPresenter(val addDealView: AddDealView,
             val deal = Deal("", daysAvailable, mutableSetOf(), description, allDay, startTime?.time, endTime?.time, bar.id)
             barApi.addUnmoderatedBarDeal(bar, deal).subscribe({
                 Timber.i("added barMeta")
+                EventManager().sendSlackEvent("New unmoderated deal ${deal.description}")
             }, { e -> Timber.e("failed to add barMeta: $e")})
             addDealView.showSubmissionSuccess()
             addDealView.closeView()

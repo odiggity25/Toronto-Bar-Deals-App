@@ -30,7 +30,7 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                         }
                     }
                     .andThen (
-                        addDeal(barMeta, deal, false)
+                            addDeal(barMeta, deal, false)
                     )
 
     /**
