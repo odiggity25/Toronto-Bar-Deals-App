@@ -1,6 +1,7 @@
 package com.tbd.app
 
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
@@ -23,7 +24,7 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     private val barFocusChangesSubject = PublishSubject.create<String>()
     val barFocusChanges: Observable<String> = barFocusChangesSubject.hide()
     val adapter: BarAdapter
-    val barClicks: Observable<Bar>
+    val barClicks: Observable<Pair<Bar, ConstraintLayout>>
     val layoutManager: LinearLayoutManager
 
     init {

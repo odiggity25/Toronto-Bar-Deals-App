@@ -42,7 +42,10 @@ class MainPresenter(private val mainView: MainView,
                 }
 
         barListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
-        barListView.barClicks.subscribe { mainView.highlightMarker(it.barMeta.id) }
+        barListView.barClicks.subscribe {
+            mainView.highlightMarker(it.first.barMeta.id)
+            mainView.showBarView(it)
+        }
 
         val day = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
             Calendar.MONDAY -> 0

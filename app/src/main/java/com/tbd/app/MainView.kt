@@ -3,24 +3,31 @@ package com.tbd.app
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
+import android.graphics.drawable.BitmapDrawable
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.TextView
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.view.detaches
 import com.tbd.app.models.Bar
+import com.tbd.app.models.CollapsedBarViewData
 import com.tbd.app.moderate.ModerateActivity
+import com.tbd.app.utils.dpToPx
 import com.tbd.app.utils.hideKeyboard
 import com.tbd.app.utils.pxToDp
 import com.tbd.app.utils.view.throttleClicks
+import com.wattpad.tap.util.onNextLayout
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -33,7 +40,7 @@ import java.util.concurrent.TimeUnit
  */
 class MainView(context: Context,
                supportFragmentManager: FragmentManager,
-               googleApiClient: GoogleApiClient) : LinearLayout(context), OnMapReadyCallback {
+               googleApiClient: GoogleApiClient) : FrameLayout(context), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
     private val mapFragment by lazy { supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment }
@@ -57,6 +64,12 @@ class MainView(context: Context,
     private val markerClicksSubject = PublishSubject.create<String>()
     val markerClicks: Observable<String> = markerClicksSubject.hide()
 
+    // Variables used for the transition to the [BarView]
+    var barPreview: ConstraintLayout? = null
+    val barViewId = 5474138
+    var collapsedData = CollapsedBarViewData()
+    var barViewTransition: BarViewTransition? = null
+
     private val bars = mutableListOf<Bar>()
     var selectedDayOfWeek = 0
 
@@ -66,7 +79,6 @@ class MainView(context: Context,
     init {
         View.inflate(context, R.layout.view_main, this)
         layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        orientation = VERTICAL
         mapFragment.getMapAsync(this)
         addBarClicks.throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe { if (addImage.rotation == 0f) addBarDialogShowsSubject.onNext(Unit)
@@ -108,7 +120,7 @@ class MainView(context: Context,
         addDealView.animate()
                 .x(0f)
                 .y(0f)
-                .setDuration(200)
+                .setDuration(300)
                 .setListener(null)
 
         addImage.bringToFront()
@@ -142,14 +154,61 @@ class MainView(context: Context,
             it.animate()
                     .x(width.toFloat())
                     .y(-height.toFloat())
-                    .setDuration(200)
+                    .setDuration(300)
                     .setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator?) {
                             container.removeView(addDealView)
                             addDealView = null
                         }
                     })
+                    .setInterpolator(AccelerateInterpolator())
         }
+    }
+
+    fun showBarView(pair: Pair<Bar, ConstraintLayout>) {
+        recordCollapsedData(pair.second)
+
+        //This will create a collapsed version of the BarView with the bar photo and title in the same place as the
+        // BarPreviewView so we can then animate it to the full version
+        val barView = BarView(context, barViewId, pair.first, collapsedData)
+
+        // For some reason the transitions won't work if you try adding the view and then changing the bounds
+        // and location, it just does it all at once. So to work around it I'm adding the view first as invisible
+        // requesting a layout and then animating the visibility in and changing the bounds
+        addView(barView)
+        barView.clicks().subscribe { hideBarView() }
+        requestLayout()
+        onNextLayout {
+            barViewTransition = BarViewTransition(context, this, barView, pair.second, collapsedData)
+            barViewTransition?.transition(true)
+        }
+    }
+
+    /**
+     * Records info about the BarPreview view so we can place the collapsed BarView over top and animate
+     * it into the full BarView
+     */
+    fun recordCollapsedData(constraintLayout: ConstraintLayout) {
+        val barPreview = constraintLayout
+        this.barPreview = barPreview
+        val location = intArrayOf(0, 0)
+
+        barPreview.getLocationInWindow(location)
+        val barPreviewName = barPreview.findViewById(R.id.bar_name_shared) as TextView
+        val barPreviewImage = barPreview.findViewById(R.id.bar_image_shared) as ImageView
+        collapsedData = CollapsedBarViewData(
+                location[0].toFloat(),
+                location[1].toFloat() - dpToPx(25),
+                barPreview.width,
+                barPreview.height,
+                pxToDp(barPreviewName.textSize.toInt()).toFloat(),
+                barPreviewName.text.toString(),
+                (barPreviewImage.drawable as BitmapDrawable).bitmap)
+    }
+
+    fun hideBarView() {
+        val barView: ConstraintLayout? = findViewById(barViewId) as ConstraintLayout
+        barView?.let { barViewTransition?.transition(false) }
     }
 
     fun addMarker(bar: Bar) {

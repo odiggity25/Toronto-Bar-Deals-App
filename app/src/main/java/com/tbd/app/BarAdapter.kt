@@ -1,6 +1,7 @@
 package com.tbd.app
 
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.jakewharton.rxbinding2.view.clicks
@@ -16,8 +17,8 @@ class BarAdapter(private val context: Context,
                  private val bars: MutableList<Bar>,
                  private var itemHeight: Int = -1) : RecyclerView.Adapter<BarAdapter.BarHolder>() {
 
-    private val barClicksSubject = PublishSubject.create<Bar>()
-    val barClicks: Observable<Bar> = barClicksSubject.hide()
+    private val barClicksSubject = PublishSubject.create<Pair<Bar, ConstraintLayout>>()
+    val barClicks: Observable<Pair<Bar, ConstraintLayout>> = barClicksSubject.hide()
     private var barsFiltered = mutableListOf<Bar>()
     var selectedDayOfWeek = -1
 
@@ -30,10 +31,10 @@ class BarAdapter(private val context: Context,
             itemHeight = parent.height
         }
         // -36 dp so the next item peeks in
-        val barHolder = BarHolder(BarView(context, parent.measuredWidth - dpToPx(36), itemHeight))
+        val barHolder = BarHolder(BarPreview(context, parent.measuredWidth - dpToPx(36), itemHeight))
         barHolder.view.clicks().subscribe {
             val bar = barsFiltered[barHolder.adapterPosition]
-            barClicksSubject.onNext(bar)
+            barClicksSubject.onNext(Pair(bar, barHolder.view.findViewById(R.id.collapsed_inside) as ConstraintLayout))
         }
         return barHolder
     }
@@ -71,5 +72,5 @@ class BarAdapter(private val context: Context,
         notifyDataSetChanged()
     }
 
-    class BarHolder(val view: BarView) : RecyclerView.ViewHolder(view)
+    class BarHolder(val view: BarPreview) : RecyclerView.ViewHolder(view)
 }

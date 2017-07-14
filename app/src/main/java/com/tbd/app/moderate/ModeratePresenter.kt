@@ -21,7 +21,7 @@ class ModeratePresenter(moderateView: ModerateView,
                         { Timber.e("Failed to fetch unmoderated deals: ${it.message}")})
                 .autoDispose(exits)
 
-        moderateView.barClicks.subscribe { moderateView.showModerateOptions(it) }
+        moderateView.barClicks.subscribe { moderateView.showModerateOptions(it.first) }
         moderateView.dealApproves.subscribe {
             barApi.approveBarDeal(it.barMeta, it.deals[0]).subscribe({ moderateView.removeBar(it) },{})
         }

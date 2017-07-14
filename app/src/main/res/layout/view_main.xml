@@ -7,66 +7,73 @@
     tools:layout_height="match_parent"
     tools:context="com.tbd.app.MainActivity"
     tools:orientation="vertical"
-    tools:parentTag="LinearLayout"
+    tools:parentTag="FrameLayout"
     >
-
-    <FrameLayout
-        android:id="@+id/main_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        >
-
-        <fragment
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".MainActivity"
-            />
-
-        <ImageView
-            android:id="@+id/main_add_bar"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_margin="8dp"
-            android:src="@drawable/ic_add"
-            android:layout_gravity="top|end"
-            />
-        <ImageView
-            android:id="@+id/main_moderate"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="46dp"
-            android:src="@drawable/ic_edit"
-            android:visibility="gone"
-            android:layout_gravity="top|end"
-            tools:visibility="visible"
-            />
-
-    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         >
-        <com.tbd.app.DayOfWeekPicker
-            android:id="@+id/main_day_of_week_picker"
+
+        <FrameLayout
+            android:id="@+id/main_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+
+            <fragment
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".MainActivity"
+                />
+
+            <ImageView
+                android:id="@+id/main_add_bar"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/ic_add"
+                android:layout_gravity="top|end"
+                />
+            <ImageView
+                android:id="@+id/main_moderate"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="46dp"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone"
+                android:layout_gravity="top|end"
+                tools:visibility="visible"
+                />
+
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            app:multiSelect="false"
-            />
+            android:orientation="vertical"
+            >
+            <com.tbd.app.DayOfWeekPicker
+                android:id="@+id/main_day_of_week_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                app:multiSelect="false"
+                />
 
-        <com.tbd.app.BarListView
-            android:id="@+id/deal_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            />
+            <com.tbd.app.BarListView
+                android:id="@+id/deal_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                />
+        </LinearLayout>
     </LinearLayout>
 
 </merge>
