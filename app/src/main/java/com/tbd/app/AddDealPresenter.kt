@@ -6,6 +6,7 @@ import com.tbd.app.apis.BarApi
 import com.tbd.app.models.BarMeta
 import com.tbd.app.models.Deal
 import com.tbd.app.utils.events.EventManager
+import com.wattpad.tap.util.rx.autoDispose
 import io.reactivex.Observable
 import timber.log.Timber
 import java.util.*
@@ -41,6 +42,7 @@ class AddDealPresenter(val addDealView: AddDealView,
         addDealView.submitClicks.subscribe {
             val description = addDealView.descriptionView.text.toString()
             val finalPlace = place
+            val tags = addDealView.getSelectedTags()
             if (finalPlace == null) {
                 addDealView.showSubmissionError("Choose the location before submitting")
                 return@subscribe
@@ -53,12 +55,16 @@ class AddDealPresenter(val addDealView: AddDealView,
                 addDealView.showSubmissionError("Describe the deal before submitting")
                 return@subscribe
             }
+            if (tags.isEmpty()) {
+                addDealView.showSubmissionError("Select at least one tag before submitting")
+                return@subscribe
+            }
 
             val bar = BarMeta(finalPlace.id, finalPlace.name.toString(), finalPlace.latLng.latitude, finalPlace.latLng.longitude, null)
             if (daysAvailable.isEmpty()) {
                 daysAvailable.addAll(listOf(0,1,2,3,4,5,6))
             }
-            val deal = Deal("", daysAvailable, mutableSetOf(), description, allDay, startTime?.time, endTime?.time, bar.id)
+            val deal = Deal("", daysAvailable, tags.toMutableSet(), description, allDay, startTime?.time, endTime?.time, bar.id)
             barApi.addUnmoderatedBarDeal(bar, deal).subscribe({
                 Timber.i("added barMeta")
                 EventManager().sendSlackEvent("New unmoderated deal ${deal.description}")
@@ -68,6 +74,9 @@ class AddDealPresenter(val addDealView: AddDealView,
         }
 
         addDealView.placeSelects.subscribe { place = it }
+
+        barApi.fetchAllDealTags().subscribe({ addDealView.addTags(it) }, {})
+                .autoDispose(detaches)
     }
 
     fun startTimeSelected(hourOfDay: Int, minute: Int) {

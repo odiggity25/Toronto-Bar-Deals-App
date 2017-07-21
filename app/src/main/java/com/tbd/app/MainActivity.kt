@@ -9,6 +9,7 @@ import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
+    private lateinit var mainView: MainView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,10 +17,17 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                         .addApi(Places.GEO_DATA_API)
                         .enableAutoManage(this, this)
                         .build()
-        setContentView(MainView(this, supportFragmentManager, googleApiClient))
+        mainView = MainView(this, supportFragmentManager, googleApiClient)
+        setContentView(mainView)
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
         Timber.e("Failed to connect to google api: ${p0.errorMessage}")
+    }
+
+    override fun onBackPressed() {
+        if (!mainView.onBackPressed()) {
+            super.onBackPressed()
+        }
     }
 }

@@ -121,4 +121,8 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                 }
     }
 
+    fun fetchAllDealTags(): Single<List<String>> {
+        return rxFirebaseDb.fetch("deal_tags", barParser::parseAllDealTags)
+    }
+
 }

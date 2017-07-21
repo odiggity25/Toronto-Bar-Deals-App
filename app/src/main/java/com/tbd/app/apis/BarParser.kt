@@ -62,6 +62,14 @@ class BarParser {
         return tags
     }
 
+    fun parseAllDealTags(dataSnapshot: DataSnapshot): List<String> {
+        val allTags = mutableListOf<String>()
+        dataSnapshot.children.forEach {
+            allTags.add(it.key)
+        }
+        return allTags
+    }
+
     fun parseDaysOfWeek(dataSnapshot: DataSnapshot): MutableSet<Int> {
         val days = mutableSetOf<Int>()
         dataSnapshot.children.forEach { days.add((it.value as Long).toInt()) }

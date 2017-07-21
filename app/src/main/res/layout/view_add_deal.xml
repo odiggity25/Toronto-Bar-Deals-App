@@ -2,6 +2,7 @@
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:layout_width="match_parent"
     tools:layout_height="match_parent"
     tools:parentTag="FrameLayout"
@@ -99,6 +100,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Description (e.g. $3.50 domestic pints)"
+                />
+
+            <com.tbd.app.TagView
+                android:id="@+id/add_deal_tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:rowSpacing="8dp"
+                app:childSpacing="auto"
+                android:layout_marginTop="10dp"
                 />
 
             <TextView

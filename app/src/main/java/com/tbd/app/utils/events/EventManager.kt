@@ -1,5 +1,6 @@
 package com.tbd.app.utils.events
 
+import com.tbd.app.BuildConfig
 import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -15,6 +16,10 @@ class EventManager(private var client: OkHttpClient = OkHttpClient()) {
     val JSON: MediaType = MediaType.parse("application/json; charset=utf-8")!!
 
     fun sendSlackEvent(message: String) {
+        if (BuildConfig.DEBUG) {
+            Timber.i("Not sending slack event because debug build")
+            return
+        }
         val messageObject = JSONObject()
         try {
             messageObject.put("text", message)

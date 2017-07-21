@@ -47,10 +47,12 @@ class AddDealView(context: Context) : FrameLayout(context) {
     val closes: Observable<Unit> = closesSubject.hide()
     private val placeSelectsSubject = PublishSubject.create<Place>()
     val placeSelects: Observable<Place> = placeSelectsSubject.hide()
+    private val tagView by lazy { findViewById(R.id.add_deal_tags) as TagView }
 
     init {
         View.inflate(context, R.layout.view_add_deal, this)
         layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        isClickable = true
         val addDealPresenter = AddDealPresenter(this, (context as AppCompatActivity).fragmentManager, detaches())
 
         startTimeClicks.subscribe {
@@ -113,5 +115,12 @@ class AddDealView(context: Context) : FrameLayout(context) {
     fun closeView() {
         closesSubject.onNext(Unit)
     }
+
+    fun addTags(tags: List<String>) {
+        tagView.addTags(tags)
+    }
+
+    fun getSelectedTags(): List<String> =
+            tagView.selectedTags
 
 }

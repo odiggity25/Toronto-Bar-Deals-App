@@ -255,4 +255,15 @@ class MainView(context: Context,
         barListView.setDayOfWeek(day)
     }
 
+    fun  onBackPressed(): Boolean {
+        if (findViewById(barViewId) !== null) {
+            hideBarView()
+            return true
+        } else if (addDealView != null) {
+            closeAddBarView()
+            return true
+        }
+        return false
+    }
+
 }
