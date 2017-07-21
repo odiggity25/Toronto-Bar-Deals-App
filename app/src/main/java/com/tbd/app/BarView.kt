@@ -3,7 +3,8 @@ package com.tbd.app
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
-import android.util.AttributeSet
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -16,19 +17,12 @@ import com.tbd.app.models.CollapsedBarViewData
  */
 class BarView : ConstraintLayout {
 
-    var bar: Bar? = null
-
     constructor(context: Context) : super(context) {
         View.inflate(context, R.layout.view_bar, this)
     }
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        View.inflate(context, R.layout.view_bar, this)
-    }
-
-    constructor(context: Context, id: Int, bar: Bar, collapsedData: CollapsedBarViewData) : super(context) {
+    constructor(context: Context, id: Int, bar: Bar, collapsedData: CollapsedBarViewData): super(context) {
         this.id = id
-        this.bar = bar
         View.inflate(context, R.layout.view_bar, this)
         setBackgroundResource(R.color.white)
 
@@ -43,6 +37,10 @@ class BarView : ConstraintLayout {
 
         (findViewById(R.id.bar_image_shared) as ImageView).setImageBitmap(collapsedData.barImage)
         (findViewById(R.id.bar_name_shared) as TextView).text = collapsedData.barName
+
+        val recyclerView = findViewById(R.id.bar_deals_list) as RecyclerView
+        recyclerView.adapter = BarDealsAdapter(context, bar)
+        recyclerView.layoutManager = LinearLayoutManager(context)
     }
 
 }

@@ -1,9 +1,11 @@
 package com.tbd.app
 
 import android.content.Context
+import android.os.Build
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.transition.*
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -39,17 +41,32 @@ class BarViewTransition(private val context: Context,
                     }
 
                 })
+        val fadeImageOverlayAndToolbar = Fade()
+                .addTarget(barView.findViewById(R.id.bar_image_overlay))
+                .addTarget(barView.findViewById(R.id.bar_close))
+                .setDuration(100)
         val translateTransition = TranslationTransition().addTarget(barView)
         val textResizeTransition = TextResizeTransition().addTarget(barView.findViewById(R.id.bar_name_shared))
+        val barViewContentTransition =
+                if (Build.VERSION.SDK_INT >= 21) {
+                    Slide(Gravity.BOTTOM)
+                } else {
+                    Fade()
+                }
+        barViewContentTransition.addTarget(barView.findViewById(R.id.bar_content))
+                .setDuration(300)
+
         val mainTransition = TransitionSet()
                 .addTransition(changeBoundsTransition)
                 .addTransition(textResizeTransition)
                 .addTransition(translateTransition)
+                .addTransition(barViewContentTransition)
 
         val transitionsOrdered = if (expandBarView) {
             TransitionSet()
                     .addTransition(fadeBarViewTransition)
                     .addTransition(mainTransition)
+                    .addTransition(fadeImageOverlayAndToolbar)
                     .setOrdering(TransitionSet.ORDERING_SEQUENTIAL)
         } else {
             TransitionSet()
@@ -79,5 +96,8 @@ class BarViewTransition(private val context: Context,
         barView.x = if (expandBarView) 0f else collapsedData.x
         barView.y = if (expandBarView) 0f else collapsedData.y
         (barView.findViewById(R.id.bar_name_shared) as TextView).textSize = if (expandBarView) 36f else collapsedData.textSize
+        barView.findViewById(R.id.bar_content).visibility = if (expandBarView) View.VISIBLE else View.GONE
+        barView.findViewById(R.id.bar_close).visibility = if (expandBarView) View.VISIBLE else View.GONE
+        barView.findViewById(R.id.bar_image_overlay).visibility = if (expandBarView) View.VISIBLE else View.GONE
     }
 }

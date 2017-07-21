@@ -7,8 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.tbd.app.models.Bar
 import com.tbd.app.utils.dpToPx
-import java.text.SimpleDateFormat
-import java.util.*
+import com.tbd.app.utils.hoursFormattedString
 
 /**
  * Shows a preview of the barMeta and its deals in a card form
@@ -30,15 +29,7 @@ class BarPreview(context: Context, width: Int, height: Int) : CardView(context) 
         barName.text = bar.barMeta.name
         var dealText = ""
         bar.deals.forEach {
-            if (it.allDay) {
-                dealText = dealText.plus("All day")
-            } else {
-                val startTime = it.startTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
-                val endTime = it.endTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
-                dealText = dealText.plus(startTime?.replace(":00", ""))
-                        .plus(" - ")
-                        .plus(endTime?.replace(":00", ""))
-            }
+            dealText = it.hoursFormattedString(context)
             dealText = dealText.plus(": ")
                     .plus(it.description)
                     .plus("\n")

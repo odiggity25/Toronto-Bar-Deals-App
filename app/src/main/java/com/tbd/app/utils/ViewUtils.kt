@@ -28,7 +28,7 @@ fun View.onNextLayout(runnable: () -> Unit) {
                                     oldRight: Int,
                                     oldBottom: Int) {
             removeOnLayoutChangeListener(this)
-            runnable()
+            v.post { runnable() }
         }
     }
 
