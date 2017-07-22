@@ -2,6 +2,7 @@ package com.tbd.app
 
 import android.content.Context
 import android.support.v7.widget.CardView
+import android.text.Html
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -29,12 +30,14 @@ class BarPreview(context: Context, width: Int, height: Int) : CardView(context) 
         barName.text = bar.barMeta.name
         var dealText = ""
         bar.deals.forEach {
-            dealText = it.hoursFormattedString(context)
-            dealText = dealText.plus(": ")
+            dealText = dealText
+                    .plus("<b>")
+                    .plus(it.hoursFormattedString(context))
+                    .plus("</b> ")
                     .plus(it.description)
-                    .plus("\n")
+                    .plus("<br>")
         }
-        dealsDescription.text = dealText
+        dealsDescription.text = Html.fromHtml(dealText)
         bar.barMeta.image?.let {
             barImage.setImageBitmap(it)
         }
