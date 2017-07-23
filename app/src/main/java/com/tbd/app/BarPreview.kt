@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.tbd.app.models.Bar
 import com.tbd.app.utils.dpToPx
 import com.tbd.app.utils.hoursFormattedString
+import com.tbd.app.utils.matchesFilter
 
 /**
  * Shows a preview of the barMeta and its deals in a card form
@@ -26,17 +27,19 @@ class BarPreview(context: Context, width: Int, height: Int) : CardView(context) 
         isClickable = true
     }
 
-    fun bind(bar: Bar) {
+    fun bind(bar: Bar, filter: DealFilter) {
         barName.text = bar.barMeta.name
         var dealText = ""
-        bar.deals.forEach {
-            dealText = dealText
-                    .plus("<b>")
-                    .plus(it.hoursFormattedString(context))
-                    .plus("</b> ")
-                    .plus(it.description)
-                    .plus("<br>")
-        }
+        bar.deals
+                .filter { it.matchesFilter(filter) }
+                .map {
+                    dealText = dealText
+                            .plus("<b>")
+                            .plus(it.hoursFormattedString(context))
+                            .plus("</b> ")
+                            .plus(it.description)
+                            .plus("<br>")
+                }
         dealsDescription.text = Html.fromHtml(dealText)
         bar.barMeta.image?.let {
             barImage.setImageBitmap(it)

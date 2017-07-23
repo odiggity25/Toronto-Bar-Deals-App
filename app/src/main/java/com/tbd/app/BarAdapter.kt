@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.jakewharton.rxbinding2.view.clicks
 import com.tbd.app.models.Bar
 import com.tbd.app.utils.dpToPx
+import com.tbd.app.utils.matchesFilter
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
@@ -15,15 +16,15 @@ import io.reactivex.subjects.PublishSubject
  */
 class BarAdapter(private val context: Context,
                  private val bars: MutableList<Bar>,
+                 private var dealFilter: DealFilter,
                  private var itemHeight: Int = -1) : RecyclerView.Adapter<BarAdapter.BarHolder>() {
 
     private val barClicksSubject = PublishSubject.create<Pair<Bar, ConstraintLayout>>()
     val barClicks: Observable<Pair<Bar, ConstraintLayout>> = barClicksSubject.hide()
     private var barsFiltered = mutableListOf<Bar>()
-    var selectedDayOfWeek = -1
 
     override fun onBindViewHolder(holder: BarHolder?, position: Int) {
-        holder?.view?.bind(barsFiltered[position])
+        holder?.view?.bind(barsFiltered[position], dealFilter)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BarHolder {
@@ -51,7 +52,7 @@ class BarAdapter(private val context: Context,
 
     fun addItem(bar: Bar) {
         bars.add(bar)
-        if (selectedDayOfWeek == -1 || !bar.deals.filter { it.daysOfWeek.contains(selectedDayOfWeek) }.isEmpty()) {
+        if (!bar.deals.filter { it.matchesFilter(dealFilter) }.isEmpty()) {
             barsFiltered.add(bar)
             notifyItemInserted(bars.lastIndex)
         }
@@ -66,9 +67,9 @@ class BarAdapter(private val context: Context,
         bars.remove(barToRemove)
     }
 
-    fun filterByDay(day: Int) {
-        selectedDayOfWeek = day
-        barsFiltered = bars.filter { !it.deals.filter { it.daysOfWeek.contains(day) }.isEmpty() } as MutableList<Bar>
+    fun filter(dealFilter: DealFilter) {
+        this.dealFilter = dealFilter
+        barsFiltered = bars.filter { !it.deals.filter { it.matchesFilter(dealFilter) }.isEmpty() } as MutableList<Bar>
         notifyDataSetChanged()
     }
 

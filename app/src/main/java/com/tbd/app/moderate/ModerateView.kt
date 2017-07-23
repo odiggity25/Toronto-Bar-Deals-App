@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.jakewharton.rxbinding2.view.detaches
 import com.tbd.app.BarAdapter
+import com.tbd.app.DealFilter
 import com.tbd.app.R
 import com.tbd.app.models.Bar
 import com.tbd.app.utils.dpToPx
@@ -20,7 +21,7 @@ import io.reactivex.subjects.PublishSubject
  */
 class ModerateView(context: Context): FrameLayout(context){
     private val recyclerView by lazy {findViewById(R.id.moderate_bars_recyclerview) as RecyclerView}
-    private val adapter = BarAdapter(context, mutableListOf(), dpToPx(160))
+    private val adapter = BarAdapter(context, mutableListOf(), DealFilter(), dpToPx(160))
     val barClicks = adapter.barClicks
     private val dealApprovesSubject = PublishSubject.create<Bar>()
     val dealApproves: Observable<Bar> = dealApprovesSubject.hide()

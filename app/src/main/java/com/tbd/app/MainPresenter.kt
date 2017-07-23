@@ -27,6 +27,7 @@ class MainPresenter(private val mainView: MainView,
                     private val barApi: BarApi = BarApi(googleApiClient = googleApiClient))  {
 
     var watching = false
+    var dealFilter = DealFilter()
 
     init {
         mainView.mapReadies.subscribe { mapReady() }
@@ -38,7 +39,8 @@ class MainPresenter(private val mainView: MainView,
         mainView.dayClicks
                 .filter { it.selected }
                 .subscribe { (day) ->
-                    mainView.setDayOfWeek(day)
+                    dealFilter.daysOfWeek = mutableListOf(day)
+                    mainView.updateFilter(dealFilter)
                 }
 
         barListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
@@ -57,7 +59,8 @@ class MainPresenter(private val mainView: MainView,
             Calendar.SUNDAY -> 6
             else -> 0
         }
-        mainView.setDayOfWeek(day)
+        dealFilter.daysOfWeek = mutableListOf(day)
+        mainView.updateFilter(dealFilter)
     }
 
     fun mapReady() {
@@ -78,7 +81,7 @@ class MainPresenter(private val mainView: MainView,
                     .subscribe({
                         when (it.action) {
                             GeoFireApi.GeoAction.ENTERED -> {
-                                mainView.addMarker(it.bar)
+                                mainView.addBar(it.bar)
                                 addBarToList(it.bar)
                             }
                             GeoFireApi.GeoAction.EXITED -> {

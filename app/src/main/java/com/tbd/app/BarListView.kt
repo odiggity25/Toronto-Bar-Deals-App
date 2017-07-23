@@ -29,7 +29,7 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     init {
         View.inflate(context, R.layout.view_bar_list, this)
-        adapter = BarAdapter(context, mutableListOf())
+        adapter = BarAdapter(context, mutableListOf(), DealFilter())
         barClicks = adapter.barClicks
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
@@ -62,7 +62,7 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
     }
 
-    fun setDayOfWeek(day: Int) {
-        adapter.filterByDay(day)
+    fun filter(dealFilter: DealFilter) {
+        adapter.filter(dealFilter)
     }
 }

@@ -25,6 +25,7 @@ import com.tbd.app.models.CollapsedBarViewData
 import com.tbd.app.moderate.ModerateActivity
 import com.tbd.app.utils.dpToPx
 import com.tbd.app.utils.hideKeyboard
+import com.tbd.app.utils.matchesFilter
 import com.tbd.app.utils.pxToDp
 import com.tbd.app.utils.view.throttleClicks
 import com.wattpad.tap.util.onNextLayout
@@ -71,7 +72,7 @@ class MainView(context: Context,
     var barViewTransition: BarViewTransition? = null
 
     private val bars = mutableListOf<Bar>()
-    var selectedDayOfWeek = 0
+    var dealFilter = DealFilter()
 
     var lastOpened: Marker? = null
     val markers = mutableListOf<Marker>()
@@ -211,16 +212,18 @@ class MainView(context: Context,
         barView?.let { barViewTransition?.transition(false) }
     }
 
-    fun addMarker(bar: Bar) {
+    fun addBar(bar: Bar) {
         bars.add(bar)
-        if (!bar.deals.filter { it.daysOfWeek.contains(selectedDayOfWeek) }.isEmpty()) {
-            val marker = googleMap?.addMarker(MarkerOptions()
-                    .position(LatLng(bar.barMeta.lat, bar.barMeta.lng))
-                    .title(bar.barMeta.name))
-            marker?.let {
-                it.tag = bar.barMeta.id
-                markers.add(it)
-            }
+        filterMarkers()
+    }
+
+    private fun addMarker(bar: Bar) {
+        val marker = googleMap?.addMarker(MarkerOptions()
+                .position(LatLng(bar.barMeta.lat, bar.barMeta.lng))
+                .title(bar.barMeta.name))
+        marker?.let {
+            it.tag = bar.barMeta.id
+            markers.add(it)
         }
     }
 
@@ -238,9 +241,9 @@ class MainView(context: Context,
                 }
     }
 
-    fun filterMarkersByDay(day: Int) {
+    fun filterMarkers() {
         googleMap?.clear()
-        val barsFiltered = bars.filter { !it.deals.filter { it.daysOfWeek.contains(day) }.isEmpty() } as MutableList<Bar>
+        val barsFiltered = bars.filter { !it.deals.filter { it.matchesFilter(dealFilter) }.isEmpty() } as MutableList<Bar>
         barsFiltered.forEach { addMarker(it) }
     }
 
@@ -248,11 +251,11 @@ class MainView(context: Context,
         context.startActivity(ModerateActivity.newIntent(context))
     }
 
-    fun setDayOfWeek(day: Int) {
-        selectedDayOfWeek = day
-        filterMarkersByDay(day)
-        dayOfWeekPicker.setDay(selectedDayOfWeek)
-        barListView.setDayOfWeek(day)
+    fun updateFilter(dealFilter: DealFilter) {
+        this.dealFilter = dealFilter
+        filterMarkers()
+        dayOfWeekPicker.setDay(dealFilter.daysOfWeek[0])
+        barListView.filter(dealFilter)
     }
 
     fun  onBackPressed(): Boolean {
