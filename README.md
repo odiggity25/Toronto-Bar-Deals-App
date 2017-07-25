@@ -1,5 +1,5 @@
 # Toronto Bar Deals
-App that let's you find bar deals close to you written in Kotlin using MVP and RxJava.
+App that let's you find bar deals close to you. Written in Kotlin using MVP and RxJava.
 
 Will be expanding this to include collections of bars with a common theme (e.g. craft beer) that offer discounts if the
 user purchases the package.
