@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="DayOfWeekPicker">
-           <attr name="multiSelect" format="boolean" />
-       </declare-styleable>
+        <attr name="multiSelect" format="boolean" />
+        <attr name="nowOption" format="boolean" />
+    </declare-styleable>
 </resources>

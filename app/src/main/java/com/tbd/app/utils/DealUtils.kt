@@ -27,10 +27,14 @@ fun Deal.hoursFormattedString(context: Context): String {
 fun Deal.matchesFilter(filter: DealFilter): Boolean {
     var dayMatches = false
     var tagMatches = false
+    var timeMatches = true
 
     this.daysOfWeek.filter { filter.daysOfWeek.isEmpty() || filter.daysOfWeek.contains(it) }
             .map { dayMatches = true }
     this.tags.filter { filter.tags.isEmpty() || filter.tags.contains(it) }
             .map { tagMatches = true }
-    return dayMatches && tagMatches
+    if (filter.now && !this.allDay) {
+        timeMatches = timeInRange(System.currentTimeMillis(), this.startTime, this.endTime)
+    }
+    return dayMatches && tagMatches && timeMatches
 }

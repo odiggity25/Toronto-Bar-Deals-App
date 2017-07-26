@@ -66,6 +66,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 app:multiSelect="false"
+                app:nowOption="true"
                 />
 
             <com.tbd.app.BarListView

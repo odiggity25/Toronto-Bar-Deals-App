@@ -254,11 +254,14 @@ class MainView(context: Context,
     fun updateFilter(dealFilter: DealFilter) {
         this.dealFilter = dealFilter
         filterMarkers()
-        dayOfWeekPicker.setDay(dealFilter.daysOfWeek[0])
         barListView.filter(dealFilter)
     }
 
-    fun  onBackPressed(): Boolean {
+    fun setInitialDayOfWeekToNow() {
+        dayOfWeekPicker.setInitialDay(7)
+    }
+
+    fun onBackPressed(): Boolean {
         if (findViewById(barViewId) !== null) {
             hideBarView()
             return true

@@ -8,13 +8,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.tbd.app.apis.BarApi
 import com.tbd.app.apis.GeoFireApi
 import com.tbd.app.models.Bar
+import com.tbd.app.utils.dayOfWeekAsInt
 import com.wattpad.tap.util.rx.autoDispose
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.*
 
 
 /**
@@ -38,8 +38,9 @@ class MainPresenter(private val mainView: MainView,
         mainView.moderateClicks.subscribe { mainView.showModerateActivity() }
         mainView.dayClicks
                 .filter { it.selected }
-                .subscribe { (day) ->
+                .subscribe { (day, _, now) ->
                     dealFilter.daysOfWeek = mutableListOf(day)
+                    dealFilter.now = now
                     mainView.updateFilter(dealFilter)
                 }
 
@@ -49,18 +50,11 @@ class MainPresenter(private val mainView: MainView,
             mainView.showBarView(it)
         }
 
-        val day = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-            Calendar.MONDAY -> 0
-            Calendar.TUESDAY -> 1
-            Calendar.WEDNESDAY -> 2
-            Calendar.THURSDAY -> 3
-            Calendar.FRIDAY -> 4
-            Calendar.SATURDAY -> 5
-            Calendar.SUNDAY -> 6
-            else -> 0
-        }
+        val day = dayOfWeekAsInt()
         dealFilter.daysOfWeek = mutableListOf(day)
+        dealFilter.now = true
         mainView.updateFilter(dealFilter)
+        mainView.setInitialDayOfWeekToNow()
     }
 
     fun mapReady() {

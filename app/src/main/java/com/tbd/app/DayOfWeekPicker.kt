@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.jakewharton.rxbinding2.view.clicks
+import com.tbd.app.utils.dayOfWeekAsInt
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 
@@ -15,10 +17,12 @@ import io.reactivex.subjects.PublishSubject
  */
 class DayOfWeekPicker(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs){
     private val dayClicksSubject = PublishSubject.create<DaySelected>()
-    val dayClicks = dayClicksSubject.hide()
+    val dayClicks: Observable<DaySelected> = dayClicksSubject.hide()
     private val multiSelect: Boolean
+    private val nowOption: Boolean
     private var previousSelected: TextView? = null
 
+    val dayNow by lazy { findViewById(R.id.day_now) as TextView }
     val day0 by lazy { findViewById(R.id.day0) as TextView }
     val day1 by lazy { findViewById(R.id.day1) as TextView }
     val day2 by lazy { findViewById(R.id.day2) as TextView }
@@ -31,6 +35,7 @@ class DayOfWeekPicker(context: Context, attrs: AttributeSet) : LinearLayout(cont
         val a = context.theme.obtainStyledAttributes(attrs, R.styleable.DayOfWeekPicker, 0, 0)
         try {
             multiSelect = a.getBoolean(R.styleable.DayOfWeekPicker_multiSelect, true)
+            nowOption = a.getBoolean(R.styleable.DayOfWeekPicker_nowOption, false)
         } finally {
             a.recycle()
         }
@@ -38,6 +43,14 @@ class DayOfWeekPicker(context: Context, attrs: AttributeSet) : LinearLayout(cont
         orientation = HORIZONTAL
         View.inflate(context, R.layout.view_day_of_week_picker, this)
 
+        if (nowOption) {
+            dayNow.visibility = View.VISIBLE
+        }
+        dayNow.clicks().subscribe {
+            dayNow.isSelected = !dayNow.isSelected
+            dayClicksSubject.onNext(DaySelected(dayOfWeekAsInt(), dayNow.isSelected, true))
+            unselectPrevious(dayNow)
+        }
         day0.clicks().subscribe {
             day0.isSelected = !day0.isSelected
             dayClicksSubject.onNext(DaySelected(0, day0.isSelected))
@@ -75,6 +88,43 @@ class DayOfWeekPicker(context: Context, attrs: AttributeSet) : LinearLayout(cont
         }
     }
 
+    fun setInitialDay(day: Int) {
+            when(day) {
+                0 -> {
+                    day0.isSelected = true
+                    unselectPrevious(day0)
+                }
+                1 -> {
+                    day1.isSelected = true
+                    unselectPrevious(day1)
+                }
+                2 ->  {
+                    day2.isSelected = true
+                    unselectPrevious(day2)
+                }
+                3 -> {
+                    day3.isSelected = true
+                    unselectPrevious(day3)
+                }
+                4 -> {
+                    day4.isSelected = true
+                    unselectPrevious(day4)
+                }
+                5 -> {
+                    day5.isSelected = true
+                    unselectPrevious(day5)
+                }
+                6 -> {
+                    day6.isSelected = true
+                    unselectPrevious(day6)
+                }
+                7 -> {
+                    dayNow.isSelected = true
+                    unselectPrevious(dayNow)
+                }
+            }
+        }
+
     private fun unselectPrevious(view: TextView) {
         previousSelected?.let {
             if (!multiSelect && it != view) {
@@ -84,38 +134,5 @@ class DayOfWeekPicker(context: Context, attrs: AttributeSet) : LinearLayout(cont
         previousSelected = view
     }
 
-    fun setDay(day: Int) {
-        when(day) {
-            0 -> {
-                day0.isSelected = true
-                unselectPrevious(day0)
-            }
-            1 -> {
-                day1.isSelected = true
-                unselectPrevious(day1)
-            }
-            2 ->  {
-                day2.isSelected = true
-                unselectPrevious(day2)
-            }
-            3 -> {
-                day3.isSelected = true
-                unselectPrevious(day3)
-            }
-            4 -> {
-                day4.isSelected = true
-                unselectPrevious(day4)
-            }
-            5 -> {
-                day5.isSelected = true
-                unselectPrevious(day5)
-            }
-            6 -> {
-                day6.isSelected = true
-                unselectPrevious(day6)
-            }
-        }
-    }
-
-    data class DaySelected(val day: Int, val selected: Boolean)
+    data class DaySelected(val day: Int, val selected: Boolean, val now: Boolean = false)
 }
