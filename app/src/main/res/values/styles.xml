@@ -16,7 +16,7 @@
     <style name="DayOfWeek" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">@drawable/text_color_day_picker</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:padding">10dp</item>
+        <item name="android:padding">8dp</item>
     </style>
 
     <style name="Button" parent="@android:style/TextAppearance.Medium">

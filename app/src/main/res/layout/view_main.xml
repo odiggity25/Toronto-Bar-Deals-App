@@ -60,15 +60,30 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
-            <com.tbd.app.DayOfWeekPicker
-                android:id="@+id/main_day_of_week_picker"
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                app:multiSelect="false"
-                app:nowOption="true"
-                />
-
+                android:orientation="horizontal"
+                >
+                <com.tbd.app.DayOfWeekPicker
+                    android:id="@+id/main_day_of_week_picker"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    app:multiSelect="false"
+                    app:nowOption="true"
+                    />
+                <ImageView
+                    android:id="@+id/main_filter_deals"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_preferences"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="16dp"
+                    />
+            </LinearLayout>
             <com.tbd.app.BarListView
                 android:id="@+id/deal_list_view"
                 android:layout_width="match_parent"

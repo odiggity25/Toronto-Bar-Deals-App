@@ -6,7 +6,10 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.FragmentManager
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.app.AppCompatActivity
+import android.transition.TransitionManager
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
@@ -23,6 +26,7 @@ import com.jakewharton.rxbinding2.view.detaches
 import com.tbd.app.models.Bar
 import com.tbd.app.models.CollapsedBarViewData
 import com.tbd.app.moderate.ModerateActivity
+import com.tbd.app.utils.animation.slideTransitionCompat
 import com.tbd.app.utils.dpToPx
 import com.tbd.app.utils.hideKeyboard
 import com.tbd.app.utils.matchesFilter
@@ -49,10 +53,15 @@ class MainView(context: Context,
     val moderateClicks by lazy { findViewById(R.id.main_moderate).throttleClicks() }
     private val addImage by lazy { findViewById(R.id.main_add_bar) as ImageView }
     private var addDealView: AddDealView? = null
+    private var dealFiltersView: DealFiltersView? = null
     private val container by lazy { findViewById(R.id.main_container) as FrameLayout }
     private val barListView by lazy { findViewById(R.id.deal_list_view) as BarListView }
     private val dayOfWeekPicker by lazy { findViewById(R.id.main_day_of_week_picker) as DayOfWeekPicker }
     val dayClicks: Observable<DayOfWeekPicker.DaySelected> by lazy { dayOfWeekPicker.dayClicks }
+    private val filterDealsButton by lazy { findViewById(R.id.main_filter_deals) as ImageView }
+    val filterClicks by lazy { filterDealsButton.clicks() }
+    private val filterClosesSubject = PublishSubject.create<DealFilter>()
+    val filterCloses: Observable<DealFilter> = filterClosesSubject.hide()
 
     private val mapReadiesSubject = PublishSubject.create<Unit>()
     val mapReadies: Observable<Unit> = mapReadiesSubject.hide()
@@ -255,6 +264,10 @@ class MainView(context: Context,
         this.dealFilter = dealFilter
         filterMarkers()
         barListView.filter(dealFilter)
+        val drawable = DrawableCompat.wrap(filterDealsButton.drawable)
+        DrawableCompat.setTint(drawable, context.resources.getColor(
+                if (dealFilter.tags.isEmpty()) R.color.medium_grey else R.color.colorAccent
+        ))
     }
 
     fun setInitialDayOfWeekToNow() {
@@ -270,6 +283,21 @@ class MainView(context: Context,
             return true
         }
         return false
+    }
+
+    fun showDealFiltersView(dealFilter: DealFilter) {
+        dealFiltersView = DealFiltersView(context, dealFilter)
+        dealFiltersView?.closes?.subscribe { filterClosesSubject.onNext(it) }
+
+        val slideTransition = slideTransitionCompat(Gravity.BOTTOM)
+        TransitionManager.beginDelayedTransition(this, slideTransition)
+        addView(dealFiltersView)
+    }
+
+    fun hideDealFiltersView() {
+        val slideTransition = slideTransitionCompat(Gravity.BOTTOM)
+        TransitionManager.beginDelayedTransition(this, slideTransition)
+        removeView(dealFiltersView)
     }
 
 }

@@ -1,7 +1,6 @@
 package com.tbd.app
 
 import android.content.Context
-import android.os.Build
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.transition.*
@@ -14,6 +13,7 @@ import com.tbd.app.models.CollapsedBarViewData
 import com.tbd.app.utils.animation.SimpleTransitionListener
 import com.tbd.app.utils.animation.TextResizeTransition
 import com.tbd.app.utils.animation.TranslationTransition
+import com.tbd.app.utils.animation.slideTransitionCompat
 
 /**
  * Animates transitioning from the bar preview below the map to a full screen [BarView]
@@ -47,12 +47,7 @@ class BarViewTransition(private val context: Context,
                 .setDuration(100)
         val translateTransition = TranslationTransition().addTarget(barView)
         val textResizeTransition = TextResizeTransition().addTarget(barView.findViewById(R.id.bar_name_shared))
-        val barViewContentTransition =
-                if (Build.VERSION.SDK_INT >= 21) {
-                    Slide(Gravity.BOTTOM)
-                } else {
-                    Fade()
-                }
+        val barViewContentTransition = slideTransitionCompat(Gravity.BOTTOM)
         barViewContentTransition.addTarget(barView.findViewById(R.id.bar_content))
                 .setDuration(300)
 

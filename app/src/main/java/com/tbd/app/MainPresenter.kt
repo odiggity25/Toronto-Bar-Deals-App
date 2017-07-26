@@ -43,6 +43,12 @@ class MainPresenter(private val mainView: MainView,
                     dealFilter.now = now
                     mainView.updateFilter(dealFilter)
                 }
+        mainView.filterClicks.subscribe { mainView.showDealFiltersView(dealFilter) }
+        mainView.filterCloses.subscribe {
+            dealFilter = it
+            mainView.updateFilter(dealFilter)
+            mainView.hideDealFiltersView()
+        }
 
         barListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
         barListView.barClicks.subscribe {
