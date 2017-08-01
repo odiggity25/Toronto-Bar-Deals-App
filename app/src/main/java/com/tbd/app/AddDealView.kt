@@ -1,11 +1,13 @@
 package com.tbd.app
 
+import android.app.Activity
 import android.app.TimePickerDialog
 import android.content.Context
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -19,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.view.detaches
+import com.tbd.app.utils.hideKeyboard
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -41,7 +44,8 @@ class AddDealView(context: Context) : FrameLayout(context) {
     private val endTimeView by lazy { findViewById(R.id.end_time) as TextView }
     val startTimeClicks by lazy { startTimeView.clicks() }
     val endTimeClicks by lazy { endTimeView.clicks() }
-    val submitClicks by lazy { findViewById(R.id.submit_deal).clicks() }
+    val submitButton: View by lazy { findViewById(R.id.submit_deal) }
+    val submitClicks by lazy { submitButton.clicks() }
     val descriptionView by lazy { findViewById(R.id.deal_description) as EditText }
     private val closesSubject = PublishSubject.create<Unit>()
     val closes: Observable<Unit> = closesSubject.hide()
@@ -82,6 +86,15 @@ class AddDealView(context: Context) : FrameLayout(context) {
                 Timber.e("Failed to retrieve place: ${p0.toString()}")
             }
         })
+
+        descriptionView.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard(context as Activity)
+                return@OnEditorActionListener true
+            }
+            false
+        })
+        tagView.tagClicks.subscribe { hideKeyboard(context as Activity) }
 
         detaches().subscribe {
             fragmentManager.beginTransaction()

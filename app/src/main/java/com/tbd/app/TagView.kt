@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.TextView
 import com.jakewharton.rxbinding2.view.clicks
 import com.nex3z.flowlayout.FlowLayout
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 
 /**
  * Created by orrie on 2017-07-21.
@@ -14,6 +16,8 @@ class TagView(context: Context, attrs: AttributeSet): FlowLayout(context, attrs)
 
     val tagViews = mutableListOf<TextView>()
     val selectedTags = mutableListOf<String>()
+    private val tagClicksSubject = PublishSubject.create<Tag>()
+    val tagClicks: Observable<Tag> = tagClicksSubject.hide()
 
     fun addTagsWithSelection(tags: List<Tag>) {
         tags.forEach { addTag(it) }
@@ -54,12 +58,14 @@ class TagView(context: Context, attrs: AttributeSet): FlowLayout(context, attrs)
         selectedTags.remove(tagName)
         tv.isSelected = false
         tv.setTextColor(context.resources.getColor(R.color.colorAccent))
+        tagClicksSubject.onNext(Tag(tagName, false))
     }
 
     private fun selectTag(tagName: String, tv: TextView) {
         selectedTags.add(tagName)
         tv.isSelected = true
         tv.setTextColor(context.resources.getColor(R.color.white))
+        tagClicksSubject.onNext(Tag(tagName, true))
     }
 
     data class Tag(val name: String, val selected: Boolean)

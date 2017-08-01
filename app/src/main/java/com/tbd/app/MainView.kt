@@ -281,6 +281,9 @@ class MainView(context: Context,
         } else if (addDealView != null) {
             closeAddBarView()
             return true
+        } else if (dealFiltersView != null) {
+            hideDealFiltersView()
+            return true
         }
         return false
     }
