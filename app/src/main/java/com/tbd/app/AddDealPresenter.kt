@@ -47,8 +47,8 @@ class AddDealPresenter(val addDealView: AddDealView,
                 addDealView.showSubmissionError("Choose the location before submitting")
                 return@subscribe
             }
-            if (!allDay && startTime == null) {
-                addDealView.showSubmissionError("Choose the start time or choose all day before submitting")
+            if (!allDay && startTime == null && endTime == null) {
+                addDealView.showSubmissionError("Choose the start time or end time or choose all day before submitting")
                 return@subscribe
             }
             if (description.isNullOrBlank()) {

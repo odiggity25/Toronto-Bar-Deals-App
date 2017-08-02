@@ -21,4 +21,6 @@
     <string name="all_day">All day</string>
     <string name="now">NOW</string>
     <string name="reset_filters">RESET FILTERS</string>
+    <string name="before_end_time">Before %1$s</string>
+    <string name="after_start_time">After %1$s</string>
 </resources>

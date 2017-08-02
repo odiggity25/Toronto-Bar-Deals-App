@@ -14,13 +14,20 @@ fun Deal.hoursFormattedString(context: Context): String {
     var dealText = ""
     if (this.allDay) {
         dealText = dealText.plus(context.getString(R.string.all_day))
-    } else {
+    } else if (this.startTime != null && this.endTime != null){
         val startTime = this.startTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
         val endTime = this.endTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
-        dealText = dealText.plus(startTime?.replace(":00", ""))
+        dealText = dealText.plus(startTime)
                 .plus(" - ")
-                .plus(endTime?.replace(":00", ""))
+                .plus(endTime)
+    } else if (this.startTime != null) {
+        val startTime = this.startTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
+        dealText = dealText.plus(context.getString(R.string.before_end_time, startTime))
+    } else if (this.endTime != null) {
+        val endTime = this.endTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
+        dealText = dealText.plus(context.getString(R.string.before_end_time, endTime))
     }
+    dealText.replace(":00", "")
     return dealText
 }
 
