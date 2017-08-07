@@ -27,7 +27,7 @@ fun Deal.hoursFormattedString(context: Context): String {
         val endTime = this.endTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
         dealText = dealText.plus(context.getString(R.string.before_end_time, endTime))
     }
-    dealText.replace(":00", "")
+    dealText = dealText.replace(":00", "")
     return dealText
 }
 
@@ -45,3 +45,6 @@ fun Deal.matchesFilter(filter: DealFilter): Boolean {
     }
     return dayMatches && tagMatches && timeMatches
 }
+
+fun Deal.isEveryday(): Boolean =
+        this.daysOfWeek.containsAll(listOf(0,1,2,3,4,5,6))

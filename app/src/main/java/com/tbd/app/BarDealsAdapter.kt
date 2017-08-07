@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.tbd.app.models.Bar
 import com.tbd.app.models.Deal
 import com.tbd.app.utils.hoursFormattedString
+import com.tbd.app.utils.isEveryday
 
 /**
  * Shows the bars deals separated by day of the week in the [BarView]
@@ -22,9 +23,16 @@ class BarDealsAdapter(private var context: Context, private val bar: Bar): Recyc
     }
 
     private fun dealsToItems() {
+        val everydayDeals = bar.deals
+                .filter { it.isEveryday()}
+                .map { DealItem(it) }
+        if (everydayDeals.isNotEmpty()) {
+            items.add(DayItem("Everyday"))
+            items.addAll(everydayDeals)
+        }
         for (day in 0..6) {
             val dayDeals = bar.deals
-                    .filter { it.daysOfWeek.contains(day) }
+                    .filter { it.daysOfWeek.contains(day) && !it.isEveryday()}
                     .map { DealItem(it) }
             if (!dayDeals.isEmpty()) {
                 items.add(
