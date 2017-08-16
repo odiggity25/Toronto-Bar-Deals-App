@@ -17,7 +17,7 @@ class EventManager(private var client: OkHttpClient = OkHttpClient()) {
 
     fun sendSlackEvent(message: String) {
         if (BuildConfig.DEBUG) {
-            Timber.i("Not sending slack event because debug build")
+            Timber.i("Not sending slack event '$message' because debug build")
             return
         }
         val messageObject = JSONObject()

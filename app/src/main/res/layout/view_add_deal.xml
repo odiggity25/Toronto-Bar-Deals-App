@@ -23,9 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/add_a_deal"
-                android:textStyle="bold"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp"
+                style="@style/DialogTitle"
                 />
 
             <fragment
@@ -33,7 +31,6 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-              android:layout_marginTop="10dp"
               />
 
             <com.tbd.app.DayOfWeekPicker
@@ -115,7 +112,7 @@
 
             <TextView
                 android:id="@+id/submit_deal"
-                android:text="Submit"
+                android:text="@string/submit"
                 android:layout_gravity="end"
                 style="@style/Button"
                 android:gravity="start"

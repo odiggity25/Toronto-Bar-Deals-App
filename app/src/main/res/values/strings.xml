@@ -23,4 +23,10 @@
     <string name="reset_filters">RESET FILTERS</string>
     <string name="before_end_time">Before %1$s</string>
     <string name="after_start_time">After %1$s</string>
+    <string name="report_inaccuracy">Report Inaccuracy</string>
+    <string name="report_deal_description_hint">Description (e.g. deal no longer exists, deal ends at 7pm, etc.)</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+    <string name="report_reviewed_shortly">Thanks! Your report will reviewed shortly</string>
+
 </resources>

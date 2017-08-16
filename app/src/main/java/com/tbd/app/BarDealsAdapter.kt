@@ -5,10 +5,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.jakewharton.rxbinding2.view.clicks
 import com.tbd.app.models.Bar
 import com.tbd.app.models.Deal
 import com.tbd.app.utils.hoursFormattedString
 import com.tbd.app.utils.isEveryday
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 
 /**
  * Shows the bars deals separated by day of the week in the [BarView]
@@ -17,6 +20,8 @@ import com.tbd.app.utils.isEveryday
 class BarDealsAdapter(private var context: Context, private val bar: Bar): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<Item>()
+    private val dealClicksSubject = PublishSubject.create<Deal>()
+    val dealClicks: Observable<Deal> = dealClicksSubject.hide()
 
     init {
         dealsToItems()
@@ -72,13 +77,19 @@ class BarDealsAdapter(private var context: Context, private val bar: Bar): Recyc
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
             R.layout.item_day -> DayHolder(View.inflate(context, viewType, null))
-            else -> DealHolder(View.inflate(context, viewType, null))
+            else -> {
+                val dealHolder = DealHolder(View.inflate(context, viewType, null))
+                dealHolder.view.clicks().subscribe {
+                    dealClicksSubject.onNext((items.get(dealHolder.adapterPosition) as DealItem).deal)
+                }
+                dealHolder
+            }
         }
 
     override fun getItemViewType(position: Int): Int =
         if (items[position] is DayItem) R.layout.item_day else R.layout.item_deal
 
-    private class DealHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private class DealHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val dealHours: TextView = view.findViewById(R.id.deal_item_hours) as TextView
         val dealDescription: TextView = view.findViewById(R.id.deal_item_description) as TextView
     }
