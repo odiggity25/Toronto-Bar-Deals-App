@@ -7,6 +7,7 @@ import com.google.android.gms.location.places.Places
 import com.tbd.app.models.Bar
 import com.tbd.app.models.BarMeta
 import com.tbd.app.models.Deal
+import com.tbd.app.utils.GoogleApiHelper
 import com.tbd.app.utils.firebase.RxFirebaseDb
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -17,8 +18,7 @@ import io.reactivex.Single
  */
 class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
              private val barParser: BarParser = BarParser(),
-             private val geoFireApi: GeoFireApi = GeoFireApi(),
-             private val googleApiClient: GoogleApiClient? = null) {
+             private val geoFireApi: GeoFireApi = GeoFireApi()) {
 
     fun addUnmoderatedBarDeal(barMeta: BarMeta, deal: Deal): Completable =
             rxFirebaseDb.valueExists("bars/${barMeta.id}")
@@ -101,14 +101,12 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
 
     fun imageForBar(barId: String): Bitmap? {
         var bitmap: Bitmap? = null
-        if (googleApiClient == null) {
-            return null
-        }
+        val googleApiClient = GoogleApiHelper.googleApiClient ?: return null
         val result = Places.GeoDataApi.getPlacePhotos(googleApiClient, barId).await()
-        if (result?.status.isSuccess) {
+        if (result.status.isSuccess) {
             bitmap = result.photoMetadata[0].getPhoto(googleApiClient).await().bitmap
         }
-        result?.photoMetadata?.release()
+        result.photoMetadata?.release()
         return bitmap
     }
 

@@ -16,7 +16,6 @@ import android.view.animation.AccelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -44,8 +43,7 @@ import java.util.concurrent.TimeUnit
  * Created by orrie on 2017-06-19.
  */
 class MainView(context: Context,
-               supportFragmentManager: FragmentManager,
-               googleApiClient: GoogleApiClient) : FrameLayout(context), OnMapReadyCallback {
+               supportFragmentManager: FragmentManager) : FrameLayout(context), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
     private val mapFragment by lazy { supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment }
@@ -93,7 +91,7 @@ class MainView(context: Context,
         addBarClicks.throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe { if (addImage.rotation == 0f) addBarDialogShowsSubject.onNext(Unit)
                 else addBarDialogClosesSubject.onNext(Unit) }
-        MainPresenter(this, detaches(), barListView, googleApiClient)
+        MainPresenter(this, detaches(), barListView)
         findViewById(R.id.main_moderate).visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
     }
 

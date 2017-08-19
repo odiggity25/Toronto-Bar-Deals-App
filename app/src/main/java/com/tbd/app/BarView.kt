@@ -95,4 +95,9 @@ class BarView : ConstraintLayout {
         reportDealDialog?.show()
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        reportDealDialog?.dismiss()
+    }
+
 }

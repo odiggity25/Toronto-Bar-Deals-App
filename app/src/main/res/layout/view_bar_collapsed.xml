@@ -11,7 +11,7 @@
         android:id="@+id/bar_image_shared"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/ic_local_bar"
+        android:src="@color/light_grey"
         android:scaleType="centerCrop"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="8dp"

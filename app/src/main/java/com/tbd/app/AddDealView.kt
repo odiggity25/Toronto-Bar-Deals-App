@@ -57,7 +57,7 @@ class AddDealView(context: Context) : FrameLayout(context) {
         View.inflate(context, R.layout.view_add_deal, this)
         layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         isClickable = true
-        val addDealPresenter = AddDealPresenter(this, (context as AppCompatActivity).fragmentManager, detaches())
+        val addDealPresenter = AddDealPresenter(this, detaches())
 
         startTimeClicks.subscribe {
             TimePickerDialog(context, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
@@ -71,7 +71,7 @@ class AddDealView(context: Context) : FrameLayout(context) {
             }, 21, 0, false).show()
         }
 
-        val fragmentManager = context.fragmentManager
+        val fragmentManager = (context as AppCompatActivity).fragmentManager
         val placesFragment = fragmentManager.findFragmentById(R.id.place_autocomplete_fragment) as PlaceAutocompleteFragment
         placesFragment.setHint(context.getString(R.string.watering_hole))
         placesFragment.setBoundsBias(LatLngBounds(LatLng(43.541844, -79.620778), LatLng(43.906694, -79.255710)))
@@ -87,7 +87,7 @@ class AddDealView(context: Context) : FrameLayout(context) {
             }
         })
 
-        descriptionView.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+        descriptionView.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard(context as Activity)
                 return@OnEditorActionListener true

@@ -2,18 +2,13 @@ package com.tbd.app
 
 import android.location.Location
 import com.firebase.geofire.GeoLocation
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
 import com.tbd.app.apis.BarApi
 import com.tbd.app.apis.GeoFireApi
-import com.tbd.app.models.Bar
 import com.tbd.app.utils.dayOfWeekAsInt
 import com.wattpad.tap.util.rx.autoDispose
 import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 
@@ -23,8 +18,7 @@ import timber.log.Timber
 class MainPresenter(private val mainView: MainView,
                     private val cancelSignal: Observable<Unit>,
                     private val barListView: BarListView,
-                    private val googleApiClient: GoogleApiClient,
-                    private val barApi: BarApi = BarApi(googleApiClient = googleApiClient))  {
+                    private val barApi: BarApi = BarApi())  {
 
     var watching = false
     var dealFilter = DealFilter()
@@ -82,7 +76,7 @@ class MainPresenter(private val mainView: MainView,
                         when (it.action) {
                             GeoFireApi.GeoAction.ENTERED -> {
                                 mainView.addBar(it.bar)
-                                addBarToList(it.bar)
+                                barListView.addBar(it.bar)
                             }
                             GeoFireApi.GeoAction.EXITED -> {
                                 mainView.removeMarker(it.bar)
@@ -98,17 +92,5 @@ class MainPresenter(private val mainView: MainView,
         } else {
             barApi.updateWatchLocation(geoLocation, radius)
         }
-    }
-
-    fun addBarToList(bar: Bar) {
-        Observable.fromCallable {  barApi.imageForBar(bar.barMeta.id) }
-                .map {
-                    bar.barMeta.image = it
-                    Single.just(bar)
-                }
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doAfterTerminate { barListView.addBar(bar) }
-                .subscribe ()
     }
 }

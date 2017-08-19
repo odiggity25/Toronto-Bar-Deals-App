@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SimpleItemAnimator
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -34,6 +35,7 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager
+        (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(recyclerView)
         recyclerView.scrollStateChanges()

@@ -15,7 +15,6 @@ import java.util.*
  * Created by orrie on 2017-06-21.
  */
 class AddDealPresenter(val addDealView: AddDealView,
-                       val fragmentManager: FragmentManager,
                        detaches: Observable<Unit>,
                        barApi: BarApi = BarApi()) {
     var place: Place? = null
