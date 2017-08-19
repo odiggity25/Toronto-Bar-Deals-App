@@ -73,7 +73,7 @@ class AddDealView(context: Context) : FrameLayout(context) {
 
         val fragmentManager = (context as AppCompatActivity).fragmentManager
         val placesFragment = fragmentManager.findFragmentById(R.id.place_autocomplete_fragment) as PlaceAutocompleteFragment
-        placesFragment.setHint(context.getString(R.string.watering_hole))
+        placesFragment.setHint(context.getString(R.string.bar_or_restaurant))
         placesFragment.setBoundsBias(LatLngBounds(LatLng(43.541844, -79.620778), LatLng(43.906694, -79.255710)))
         val filter = AutocompleteFilter.Builder().setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT).build()
         placesFragment.setFilter(filter)
