@@ -84,13 +84,13 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
 
     fun watchBarsForLocation(geoLocation: GeoLocation, radius: Double): Observable<BarChange> =
                 geoFireApi.watchBarIds(geoLocation, radius)
-                        .flatMap { geoChange ->
-                            if (geoChange.action == GeoFireApi.GeoAction.FINISHED) {
-                                Observable.just(BarChange(geoChange.action, null))
+                        .flatMap { (action, barId) ->
+                            if (action == GeoFireApi.GeoAction.FINISHED) {
+                                Observable.just(BarChange(action, null))
                             } else {
-                                fetchBar(geoChange.barId)
+                                fetchBar(barId)
                                         .flatMapObservable {
-                                            Observable.just(BarChange(geoChange.action, it))
+                                            Observable.just(BarChange(action, it))
                                         }
                             }
 

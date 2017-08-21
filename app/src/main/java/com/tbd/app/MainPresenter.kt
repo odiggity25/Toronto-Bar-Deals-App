@@ -81,17 +81,18 @@ class MainPresenter(private val mainView: MainView,
                                 it.bar?.let { bar ->
                                     mainView.addBar(bar)
                                     barListView.addBar(bar)
-                                    barListView.hideProgressBar()
+                                    barListView.updateEmptyState()
                                 }
                             }
                             GeoFireApi.GeoAction.EXITED -> {
                                 it.bar?.let { bar ->
                                     mainView.removeMarker(bar)
                                     barListView.removeBar(bar)
+                                    barListView.updateEmptyState()
                                 }
                             }
                             GeoFireApi.GeoAction.FINISHED -> {
-                                barListView.hideProgressBar()
+                                barListView.updateEmptyState()
                             }
                         }
                     }, {

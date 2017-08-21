@@ -24,6 +24,7 @@ import io.reactivex.subjects.PublishSubject
 class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs){
     private val recyclerView by lazy { findViewById(R.id.bar_list_recyclerview) as RecyclerView }
     private val progressBar by lazy { findViewById(R.id.bar_list_progress_bar) as ProgressBar }
+    private val emptyView by lazy { findViewById(R.id.bar_list_empty_view) }
     private val barFocusChangesSubject = PublishSubject.create<String>()
     val barFocusChanges: Observable<String> = barFocusChangesSubject.hide()
     private val adapter: BarAdapter
@@ -83,15 +84,22 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     fun filter(dealFilter: DealFilter) {
         adapter.filter(dealFilter)
+        updateEmptyState()
     }
 
     fun getCurrentBar(): Bar? {
         val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-        return if (position >= 0) adapter.getItem(position) else null
+        return if (position >= 0 && adapter.itemCount > 0) adapter.getItem(position) else null
     }
 
-    fun hideProgressBar() {
+    fun updateEmptyState() {
         progressBar.visibility = View.GONE
-        recyclerView.visibility = View.VISIBLE
+        if (adapter.itemCount > 0) {
+            recyclerView.visibility = View.VISIBLE
+            emptyView.visibility = View.GONE
+        } else {
+            recyclerView.visibility = View.GONE
+            emptyView.visibility = View.VISIBLE
+        }
     }
 }

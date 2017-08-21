@@ -66,7 +66,8 @@ class BarAdapter(private val context: Context,
         loadImage(bar)
         if (!bar.deals.filter { it.matchesFilter(dealFilter) }.isEmpty()) {
             barsFiltered.add(bar)
-            notifyItemInserted(bars.lastIndex)
+            notifyItemInserted(barsFiltered.lastIndex)
+            notifyDataSetChanged()
         }
     }
 
