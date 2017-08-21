@@ -11,6 +11,7 @@ import com.tbd.app.utils.firebase.RxFirebaseDb
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by orrie on 2017-06-22.
@@ -86,7 +87,12 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                 geoFireApi.watchBarIds(geoLocation, radius)
                         .flatMap { (action, barId) ->
                             if (action == GeoFireApi.GeoAction.FINISHED) {
+                                // The delay is a hack. When the GeoAction.ENTERED happens it has to fetch
+                                // the meta data for that bar and the FINISHED ends up coming through first. Using
+                                // concatMap works, but slows down the loading because they don't happen in parallel.
+                                // Not sure how to solve this...
                                 Observable.just(BarChange(action, null))
+                                        .delay(1, TimeUnit.SECONDS)
                             } else {
                                 fetchBar(barId)
                                         .flatMapObservable {

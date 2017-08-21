@@ -67,7 +67,6 @@ class BarAdapter(private val context: Context,
         if (!bar.deals.filter { it.matchesFilter(dealFilter) }.isEmpty()) {
             barsFiltered.add(bar)
             notifyItemInserted(barsFiltered.lastIndex)
-            notifyDataSetChanged()
         }
     }
 
@@ -77,7 +76,10 @@ class BarAdapter(private val context: Context,
             barsFiltered.removeAt(indexToRemove)
             notifyItemRemoved(indexToRemove)
         }
-        bars.remove(barToRemove)
+        indexToRemove = bars.indexOfFirst { it.barMeta.id == barToRemove.barMeta.id }
+        if (indexToRemove >= 0) {
+            bars.removeAt(indexToRemove)
+        }
     }
 
     fun updateItem(updatedBar: Bar) {

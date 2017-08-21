@@ -75,20 +75,19 @@ class MainPresenter(private val mainView: MainView,
 
         if (!watching) {
             barApi.watchBarsForLocation(geoLocation, radius)
+                    .retry()
                     .subscribe({
                         when (it.action) {
                             GeoFireApi.GeoAction.ENTERED -> {
                                 it.bar?.let { bar ->
                                     mainView.addBar(bar)
                                     barListView.addBar(bar)
-                                    barListView.updateEmptyState()
                                 }
                             }
                             GeoFireApi.GeoAction.EXITED -> {
                                 it.bar?.let { bar ->
                                     mainView.removeMarker(bar)
                                     barListView.removeBar(bar)
-                                    barListView.updateEmptyState()
                                 }
                             }
                             GeoFireApi.GeoAction.FINISHED -> {

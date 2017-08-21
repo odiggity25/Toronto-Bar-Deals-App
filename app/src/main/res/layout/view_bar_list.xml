@@ -14,7 +14,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="center"
-        android:visibility="gone"
+        android:visibility="visible"
         />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/bar_list_recyclerview"
@@ -32,6 +32,7 @@
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:layout_margin="16dp"
+        android:visibility="gone"
         >
         <TextView
             android:layout_width="wrap_content"
