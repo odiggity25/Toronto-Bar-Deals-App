@@ -53,20 +53,25 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
 
+            override fun onChanged() {
+                adapterChanged()
+            }
+
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                getCurrentBar()?.let {
-                    barFocusChangesSubject.onNext(it.barMeta.id)
-                }
-                updateEmptyState()
+                adapterChanged()
             }
 
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                getCurrentBar()?.let {
-                    barFocusChangesSubject.onNext(it.barMeta.id)
-                }
-                updateEmptyState()
+                adapterChanged()
             }
         })
+    }
+
+    private fun adapterChanged() {
+        getCurrentBar()?.let {
+            barFocusChangesSubject.onNext(it.barMeta.id)
+        }
+        updateEmptyState()
     }
 
     fun addBar(bar: Bar) {

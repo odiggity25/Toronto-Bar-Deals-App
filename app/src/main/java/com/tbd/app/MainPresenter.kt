@@ -53,7 +53,7 @@ class MainPresenter(private val mainView: MainView,
         val day = dayOfWeekAsInt()
         dealFilter.daysOfWeek = mutableListOf(day)
         dealFilter.now = true
-        mainView.updateFilter(dealFilter)
+        mainView.bind(dealFilter)
         mainView.setInitialDayOfWeekToNow()
     }
 

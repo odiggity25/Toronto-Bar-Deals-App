@@ -95,6 +95,10 @@ class MainView(context: Context,
         findViewById(R.id.main_moderate).visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
     }
 
+    fun bind(filter: DealFilter) {
+        this.dealFilter = filter
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         mapReadiesSubject.onNext(Unit)
@@ -294,12 +298,14 @@ class MainView(context: Context,
         dealFiltersView?.closes?.subscribe { filterClosesSubject.onNext(it) }
 
         val slideTransition = slideTransitionCompat(Gravity.BOTTOM)
+                .addTarget(dealFiltersView)
         TransitionManager.beginDelayedTransition(this, slideTransition)
         addView(dealFiltersView)
     }
 
     fun hideDealFiltersView() {
         val slideTransition = slideTransitionCompat(Gravity.BOTTOM)
+                .addTarget(dealFiltersView)
         TransitionManager.beginDelayedTransition(this, slideTransition)
         removeView(dealFiltersView)
     }
