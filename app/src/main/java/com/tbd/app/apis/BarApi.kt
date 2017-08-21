@@ -2,7 +2,6 @@ package com.tbd.app.apis
 
 import android.graphics.Bitmap
 import com.firebase.geofire.GeoLocation
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.places.Places
 import com.tbd.app.models.Bar
 import com.tbd.app.models.BarMeta
@@ -86,10 +85,14 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
     fun watchBarsForLocation(geoLocation: GeoLocation, radius: Double): Observable<BarChange> =
                 geoFireApi.watchBarIds(geoLocation, radius)
                         .flatMap { geoChange ->
-                            fetchBar(geoChange.barId)
-                                    .flatMapObservable {
-                                        Observable.just(BarChange(geoChange.action, it))
-                                    }
+                            if (geoChange.action == GeoFireApi.GeoAction.FINISHED) {
+                                Observable.just(BarChange(geoChange.action, null))
+                            } else {
+                                fetchBar(geoChange.barId)
+                                        .flatMapObservable {
+                                            Observable.just(BarChange(geoChange.action, it))
+                                        }
+                            }
 
                         }
 
@@ -97,7 +100,7 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
         geoFireApi.updateGeoQuery(geoLocation, radius)
     }
 
-    data class BarChange(val action: GeoFireApi.GeoAction, val bar: Bar)
+    data class BarChange(val action: GeoFireApi.GeoAction, val bar: Bar?)
 
     fun imageForBar(barId: String): Bitmap? {
         var bitmap: Bitmap? = null

@@ -30,13 +30,12 @@ class BarAdapter(private val context: Context,
     private var barsFiltered = mutableListOf<Bar>()
     private val defaultBarImage = BitmapFactory.decodeResource(null, R.drawable.ic_local_bar)
 
-    init {
-        bars.forEach { loadImage(it) }
-    }
-
-    override fun onBindViewHolder(holder: BarHolder?, position: Int) {
+    override fun onBindViewHolder(holder: BarHolder, position: Int) {
         val bar = barsFiltered[position]
-        holder?.view?.bind(bar, dealFilter)
+        holder.view.bind(bar, dealFilter)
+        if (bar.barMeta.image == null) {
+            loadImage(bar)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BarHolder {

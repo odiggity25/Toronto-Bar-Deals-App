@@ -9,6 +9,7 @@ import android.support.v7.widget.SimpleItemAnimator
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ProgressBar
 import com.jakewharton.rxbinding2.support.v7.widget.scrollStateChanges
 import com.jakewharton.rxbinding2.view.detaches
 import com.tbd.app.models.Bar
@@ -21,12 +22,13 @@ import io.reactivex.subjects.PublishSubject
  * Created by orrie on 2017-07-04.
  */
 class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs){
-    private val recyclerView by lazy { findViewById(R.id.deal_list_recyclerview) as RecyclerView }
+    private val recyclerView by lazy { findViewById(R.id.bar_list_recyclerview) as RecyclerView }
+    private val progressBar by lazy { findViewById(R.id.bar_list_progress_bar) as ProgressBar }
     private val barFocusChangesSubject = PublishSubject.create<String>()
     val barFocusChanges: Observable<String> = barFocusChangesSubject.hide()
-    val adapter: BarAdapter
+    private val adapter: BarAdapter
     val barClicks: Observable<Pair<Bar, ConstraintLayout>>
-    val layoutManager: LinearLayoutManager
+    private val layoutManager: LinearLayoutManager
 
     init {
         View.inflate(context, R.layout.view_bar_list, this)
@@ -86,5 +88,10 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     fun getCurrentBar(): Bar? {
         val position = layoutManager.findFirstCompletelyVisibleItemPosition()
         return if (position >= 0) adapter.getItem(position) else null
+    }
+
+    fun hideProgressBar() {
+        progressBar.visibility = View.GONE
+        recyclerView.visibility = View.VISIBLE
     }
 }

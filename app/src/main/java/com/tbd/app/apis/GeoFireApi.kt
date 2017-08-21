@@ -53,6 +53,7 @@ class GeoFireApi {
                         }
 
                         override fun onGeoQueryReady() {
+                            it.onNext(GeoChange(GeoAction.FINISHED, ""))
                         }
 
                     })
@@ -62,7 +63,7 @@ class GeoFireApi {
     fun updateGeoQuery(geoLocation: GeoLocation, radius: Double) {
         geoQuery?.setLocation(geoLocation, radius/1000)
     }
-    enum class GeoAction { ENTERED, EXITED }
+    enum class GeoAction { ENTERED, EXITED, FINISHED }
     data class GeoChange(val action: GeoAction, val barId: String)
 
 }

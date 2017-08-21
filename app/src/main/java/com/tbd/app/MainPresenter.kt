@@ -78,12 +78,20 @@ class MainPresenter(private val mainView: MainView,
                     .subscribe({
                         when (it.action) {
                             GeoFireApi.GeoAction.ENTERED -> {
-                                mainView.addBar(it.bar)
-                                barListView.addBar(it.bar)
+                                it.bar?.let { bar ->
+                                    mainView.addBar(bar)
+                                    barListView.addBar(bar)
+                                    barListView.hideProgressBar()
+                                }
                             }
                             GeoFireApi.GeoAction.EXITED -> {
-                                mainView.removeMarker(it.bar)
-                                barListView.removeBar(it.bar)
+                                it.bar?.let { bar ->
+                                    mainView.removeMarker(bar)
+                                    barListView.removeBar(bar)
+                                }
+                            }
+                            GeoFireApi.GeoAction.FINISHED -> {
+                                barListView.hideProgressBar()
                             }
                         }
                     }, {
