@@ -239,8 +239,11 @@ class MainView(context: Context,
                 .map { it.remove() }
     }
 
-    fun highlightMarker(barId: String) {
-        lastOpened?.hideInfoWindow()
+    fun showMarkerInfoWindow(barId: String) {
+        lastOpened?.let {
+            if (it.tag == barId && it.isInfoWindowShown) return
+            it.hideInfoWindow()
+        }
         markers.filter { it.tag == barId }
                 .map {
                     it.showInfoWindow()

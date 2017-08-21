@@ -44,9 +44,9 @@ class MainPresenter(private val mainView: MainView,
             mainView.hideDealFiltersView()
         }
 
-        barListView.barFocusChanges.subscribe { mainView.highlightMarker(it) }
+        barListView.barFocusChanges.subscribe { mainView.showMarkerInfoWindow(it) }
         barListView.barClicks.subscribe {
-            mainView.highlightMarker(it.first.barMeta.id)
+            mainView.showMarkerInfoWindow(it.first.barMeta.id)
             mainView.showBarView(it)
         }
 
@@ -65,8 +65,11 @@ class MainPresenter(private val mainView: MainView,
     fun mapChanged(projection: Projection) {
         val latLngBounds = projection.visibleRegion.latLngBounds
         val radiusResults = FloatArray(3)
-        Location.distanceBetween(latLngBounds.southwest.latitude, latLngBounds.southwest.longitude,
-                latLngBounds.northeast.latitude, latLngBounds.northeast.longitude, radiusResults)
+        // Note we use the mid latitude since the width of the screen is smaller than the height so if
+        // we used bottom left and top right we'd get a radius that is actually larger than what is on screen
+        val midLatitude = (latLngBounds.southwest.latitude + latLngBounds.northeast.latitude)/2
+        Location.distanceBetween(midLatitude, latLngBounds.southwest.longitude,
+                midLatitude, latLngBounds.northeast.longitude, radiusResults)
         val radius = radiusResults[0].toDouble() / 2
         val geoLocation = GeoLocation(latLngBounds.center.latitude, latLngBounds.center.longitude)
 

@@ -47,6 +47,21 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     barFocusChangesSubject.onNext(it.barMeta.id)
                 }
                 .autoDispose(detaches())
+
+        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+
+            override fun onChanged() {
+                getCurrentBar()?.let { barFocusChangesSubject.onNext(it.barMeta.id) }
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                getCurrentBar()?.let { barFocusChangesSubject.onNext(it.barMeta.id) }
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                getCurrentBar()?.let { barFocusChangesSubject.onNext(it.barMeta.id) }
+            }
+        })
     }
 
     fun addBar(bar: Bar) {
@@ -66,5 +81,10 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     fun filter(dealFilter: DealFilter) {
         adapter.filter(dealFilter)
+    }
+
+    fun getCurrentBar(): Bar? {
+        val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+        return if (position >= 0) adapter.getItem(position) else null
     }
 }
