@@ -34,7 +34,7 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                     )
 
     /**
-     * Note: The geo cordinates won't be saved until the deal is verified, so that it won't show up
+     * Note: The geo coordinates won't be saved until the deal is verified, so that it won't show up
      * on the map
      */
     fun addBar(barMeta: BarMeta): Completable =
@@ -42,7 +42,11 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                     mapOf(
                             "name" to barMeta.name,
                             "lat" to barMeta.lat,
-                            "lon" to barMeta.lng
+                            "lon" to barMeta.lng,
+                            "address" to barMeta.address,
+                            "price_level" to barMeta.priceLevel,
+                            "rating" to barMeta.rating,
+                            "website" to barMeta.website
                     ))
 
     fun approveBarDeal(barMeta: BarMeta, deal: Deal): Completable {

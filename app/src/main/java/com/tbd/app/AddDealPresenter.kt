@@ -1,6 +1,5 @@
 package com.tbd.app
 
-import android.app.FragmentManager
 import com.google.android.gms.location.places.Place
 import com.tbd.app.apis.BarApi
 import com.tbd.app.models.BarMeta
@@ -59,7 +58,7 @@ class AddDealPresenter(val addDealView: AddDealView,
                 return@subscribe
             }
 
-            val bar = BarMeta(finalPlace.id, finalPlace.name.toString(), finalPlace.latLng.latitude, finalPlace.latLng.longitude, null)
+            val bar = BarMeta(finalPlace)
             if (daysAvailable.isEmpty()) {
                 daysAvailable.addAll(listOf(0,1,2,3,4,5,6))
             }

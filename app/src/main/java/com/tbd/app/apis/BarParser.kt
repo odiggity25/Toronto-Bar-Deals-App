@@ -3,10 +3,7 @@ package com.tbd.app.apis
 import com.google.firebase.database.DataSnapshot
 import com.tbd.app.models.BarMeta
 import com.tbd.app.models.Deal
-import com.tbd.app.utils.firebase.getBooleanValue
-import com.tbd.app.utils.firebase.getDoubleValue
-import com.tbd.app.utils.firebase.getLongValue
-import com.tbd.app.utils.firebase.getStringValue
+import com.tbd.app.utils.firebase.*
 
 /**
  * Created by orrie on 2017-06-22.
@@ -18,7 +15,11 @@ class BarParser {
         val name = dataSnapshot.getStringValue("name") ?: return null
         val lat = dataSnapshot.getDoubleValue("lat") ?: return null
         val lon = dataSnapshot.getDoubleValue("lon") ?: return null
-        return BarMeta(id, name, lat, lon)
+        val address = dataSnapshot.getStringValue("address") ?: return null
+        val priceLevel = dataSnapshot.getIntValue("price_level")
+        val rating = dataSnapshot.getDoubleValue("rating")
+        val website = dataSnapshot.getStringValue("website")
+        return BarMeta(id, name, lat, lon, address, priceLevel, rating, website)
     }
 
     fun parseDeal(barId: String, dataSnapshot: DataSnapshot): Deal? {
