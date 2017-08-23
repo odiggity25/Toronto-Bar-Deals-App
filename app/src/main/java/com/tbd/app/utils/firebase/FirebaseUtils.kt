@@ -18,4 +18,4 @@ fun DataSnapshot.getDoubleValue(key: String): Double? =
         this.child(key).value as? Double
 
 fun DataSnapshot.getIntValue(key: String): Int? =
-        this.child(key).value as? Int
+        getLongValue(key)?.toInt()

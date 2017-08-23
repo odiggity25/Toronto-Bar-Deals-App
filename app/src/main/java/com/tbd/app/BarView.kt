@@ -9,12 +9,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.*
+import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.view.detaches
 import com.tbd.app.models.Bar
 import com.tbd.app.models.CollapsedBarViewData
 import com.tbd.app.models.Deal
 import com.tbd.app.models.DealReport
 import com.tbd.app.report.ReportDealView
+import com.tbd.app.utils.view.StarRatingBar
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
@@ -30,6 +32,14 @@ class BarView : ConstraintLayout {
     private val reportDealSubmitsSubject = PublishSubject.create<DealReport>()
     val reportDealSubmits: Observable<DealReport> = reportDealSubmitsSubject.hide()
 
+    private val starRatingLayout by lazy { findViewById(R.id.bar_view_stars) }
+    private val starRatingText by lazy { findViewById(R.id.bar_view_stars_text) as TextView }
+    private val starRatingBar by lazy { findViewById(R.id.bar_view_star_rating_bar) as StarRatingBar }
+    private val priceLevel by lazy { findViewById(R.id.bar_view_price_level) as TextView }
+    private val websiteButton by lazy { findViewById(R.id.bar_view_website_button) }
+    val websiteClicks by lazy { findViewById(R.id.bar_view_website_button).clicks() }
+    val showOnMapClicks by lazy { findViewById(R.id.bar_view_map_button).clicks() }
+
     var reportDealDialog: AlertDialog? = null
 
     constructor(context: Context) : super(context) {
@@ -37,10 +47,10 @@ class BarView : ConstraintLayout {
     }
 
     constructor(context: Context, id: Int, bar: Bar, collapsedData: CollapsedBarViewData): super(context) {
-        BarViewPresenter(context, this)
         this.id = id
         View.inflate(context, R.layout.view_bar, this)
         setBackgroundResource(R.color.white)
+        BarViewPresenter(context, bar, this)
 
         layoutParams = FrameLayout.LayoutParams(collapsedData.width, collapsedData.height)
         x = collapsedData.x
@@ -59,6 +69,28 @@ class BarView : ConstraintLayout {
         recyclerView.adapter = barDealsAdapter
         barDealsAdapter.dealClicks.subscribe { dealClicksSubject.onNext(it) }
         recyclerView.layoutManager = LinearLayoutManager(context)
+
+        websiteButton.visibility = if (bar.barMeta.website != null) View.VISIBLE else View.GONE
+
+        if (bar.barMeta.rating != null) {
+            starRatingLayout.visibility = View.VISIBLE
+            starRatingBar.bind(bar.barMeta.rating)
+            val ratingString = String.format("%.2f", bar.barMeta.rating)
+            starRatingText.text = ratingString
+        } else {
+            starRatingLayout.visibility = View.GONE
+        }
+
+        if (bar.barMeta.priceLevel != null) {
+            priceLevel.visibility = View.VISIBLE
+            var dollarSigns = ""
+            for (i in 1..bar.barMeta.priceLevel) {
+                dollarSigns = dollarSigns.plus("$")
+            }
+            priceLevel.text = dollarSigns
+        } else {
+            priceLevel.visibility = View.GONE
+        }
 
         detaches().subscribe { reportDealDialog?.dismiss() }
     }

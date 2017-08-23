@@ -30,5 +30,7 @@
     <string name="report_reviewed_shortly">Thanks! Your report will reviewed shortly</string>
     <string name="add_deal_prompt">Know a good deal? Add it to the map by tapping the plus icon in the top right</string>
     <string name="no_deals_found">No deals found :(</string>
+    <string name="map">Map</string>
+    <string name="website">Website</string>
 
 </resources>

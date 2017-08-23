@@ -7,17 +7,106 @@
     android:layout_height="match_parent"
     >
 
+    <LinearLayout
+            android:id="@+id/bar_view_map_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/bar_view_website_button"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_location_pin"
+                android:id="@+id/imageView"
+                />
+            <TextView
+                android:id="@+id/bar_view_map_text"
+                android:text="@string/map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toBottomOf="parent"
+            android:id="@+id/bar_view_website_button"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/bar_view_map_button"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_globe"
+                />
+            <TextView
+                android:text="@string/website"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bar_view_stars"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bar_view_map_button"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:id="@+id/bar_view_stars_text"
+                tools:text="4.3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/star_colour"
+                />
+            <com.tbd.app.utils.view.StarRatingBar
+                android:id="@+id/bar_view_star_rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:gravity="center_vertical"
+                />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/bar_view_price_level"
+            tools:text="$$$"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/bar_view_stars"
+            android:layout_marginStart="16dp"
+            app:layout_constraintTop_toTopOf="@+id/bar_view_stars"
+            app:layout_constraintBottom_toBottomOf="@+id/bar_view_stars"
+            />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/bar_deals_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/bar_view_price_level"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp"
         />

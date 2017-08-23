@@ -3,7 +3,6 @@ package com.tbd.app
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.FragmentManager
 import android.support.v4.graphics.drawable.DrawableCompat
@@ -178,7 +177,7 @@ class MainView(context: Context,
     }
 
     fun showBarView(pair: Pair<Bar, ConstraintLayout>) {
-        recordCollapsedData(pair.second)
+        recordCollapsedData(pair)
 
         //This will create a collapsed version of the BarView with the bar photo and title in the same place as the
         // BarPreviewView so we can then animate it to the full version
@@ -200,14 +199,14 @@ class MainView(context: Context,
      * Records info about the BarPreview view so we can place the collapsed BarView over top and animate
      * it into the full BarView
      */
-    fun recordCollapsedData(constraintLayout: ConstraintLayout) {
-        val barPreview = constraintLayout
+    fun recordCollapsedData(pair: Pair<Bar, ConstraintLayout>) {
+        val barPreview = pair.second
         this.barPreview = barPreview
         val location = intArrayOf(0, 0)
 
         barPreview.getLocationInWindow(location)
         val barPreviewName = barPreview.findViewById(R.id.bar_name_shared) as TextView
-        val barPreviewImage = barPreview.findViewById(R.id.bar_image_shared) as ImageView
+        val bitmap = pair.first.barMeta.image
         collapsedData = CollapsedBarViewData(
                 location[0].toFloat(),
                 location[1].toFloat() - dpToPx(25),
@@ -215,7 +214,7 @@ class MainView(context: Context,
                 barPreview.height,
                 pxToDp(barPreviewName.textSize.toInt()).toFloat(),
                 barPreviewName.text.toString(),
-                (barPreviewImage.drawable as BitmapDrawable).bitmap)
+                bitmap)
     }
 
     fun hideBarView() {

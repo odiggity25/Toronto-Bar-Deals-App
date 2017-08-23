@@ -11,6 +11,7 @@ import com.tbd.app.utils.firebase.RxFirebaseDb
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
 /**
@@ -97,6 +98,7 @@ class BarApi(private val rxFirebaseDb: RxFirebaseDb = RxFirebaseDb(),
                                 // Not sure how to solve this...
                                 Observable.just(BarChange(action, null))
                                         .delay(1, TimeUnit.SECONDS)
+                                        .observeOn(AndroidSchedulers.mainThread())
                             } else {
                                 fetchBar(barId)
                                         .flatMapObservable {
