@@ -22,7 +22,7 @@ fun Deal.hoursFormattedString(context: Context): String {
                 .plus(endTime)
     } else if (this.startTime != null) {
         val startTime = this.startTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
-        dealText = dealText.plus(context.getString(R.string.before_end_time, startTime))
+        dealText = dealText.plus(context.getString(R.string.after_start_time, startTime))
     } else if (this.endTime != null) {
         val endTime = this.endTime?.let { SimpleDateFormat("h:mm a").format(Date(it)) }
         dealText = dealText.plus(context.getString(R.string.before_end_time, endTime))
