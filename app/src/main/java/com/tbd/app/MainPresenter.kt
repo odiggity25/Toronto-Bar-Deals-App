@@ -1,11 +1,17 @@
 package com.tbd.app
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.location.Location
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
 import com.tbd.app.apis.BarApi
 import com.tbd.app.apis.GeoFireApi
+import com.tbd.app.apis.LocationApi
 import com.tbd.app.utils.dayOfWeekAsInt
 import com.wattpad.tap.util.rx.autoDispose
 import io.reactivex.Observable
@@ -18,12 +24,25 @@ import timber.log.Timber
 class MainPresenter(private val mainView: MainView,
                     private val cancelSignal: Observable<Unit>,
                     private val barListView: BarListView,
-                    private val barApi: BarApi = BarApi())  {
+                    private val barApi: BarApi = BarApi(),
+                    private val locationApi: LocationApi = LocationApi(mainView.context))  {
 
     var watching = false
     var dealFilter = DealFilter()
+    val context = mainView.context as AppCompatActivity
+    val defaultZoom = 14f
+
+    companion object {
+        val REQUEST_GET_FINE_LOCATION_PERMISSION = 101
+    }
 
     init {
+        val day = dayOfWeekAsInt()
+        dealFilter.daysOfWeek = mutableListOf(day)
+        dealFilter.now = true
+        mainView.bind(dealFilter)
+        mainView.setInitialDayOfWeekToNow()
+
         mainView.mapReadies.subscribe { mapReady() }
         mainView.mapChanges.subscribe { mapChanged(it) }
         mainView.addBarDialogShows.subscribe { mainView.showAddBarView() }
@@ -50,19 +69,34 @@ class MainPresenter(private val mainView: MainView,
             mainView.showBarView(it)
         }
 
-        val day = dayOfWeekAsInt()
-        dealFilter.daysOfWeek = mutableListOf(day)
-        dealFilter.now = true
-        mainView.bind(dealFilter)
-        mainView.setInitialDayOfWeekToNow()
+        if (!hasLocationPermission()) {
+            ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_GET_FINE_LOCATION_PERMISSION)
+        }
     }
 
-    fun mapReady() {
-        val toronto = LatLng(43.6532, -79.3832)
-        mainView.moveMap(toronto, 12f)
+    private fun hasLocationPermission(): Boolean =
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    private fun mapReady() {
+        setMapLocation()
     }
 
-    fun mapChanged(projection: Projection) {
+    fun setMapLocation() {
+        val torontoLocation = LatLng(43.6532, -79.3832)
+        if (!hasLocationPermission()) {
+            mainView.moveMap(torontoLocation, defaultZoom)
+            return
+        }
+        locationApi.getLastLocation().subscribe({
+            val position = LatLng(it.latitude, it.longitude)
+            mainView.moveMap(position, defaultZoom)
+            mainView.setPositionMarker(position)
+        }, {
+            mainView.moveMap(torontoLocation, defaultZoom)
+        })
+    }
+
+    private fun mapChanged(projection: Projection) {
         val latLngBounds = projection.visibleRegion.latLngBounds
         val radiusResults = FloatArray(3)
         // Note we use the mid latitude since the width of the screen is smaller than the height so if

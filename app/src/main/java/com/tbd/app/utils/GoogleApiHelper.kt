@@ -12,11 +12,8 @@ object GoogleApiHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.On
     var googleApiClient: GoogleApiClient? = null
 
     fun initialize(context: Context) {
+        if (isConnected) return
         buildGoogleApiClient(context)
-        connect()
-    }
-
-    fun connect() {
         googleApiClient?.connect()
     }
 

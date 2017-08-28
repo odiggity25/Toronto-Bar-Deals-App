@@ -18,4 +18,10 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when(requestCode) {
+            MainPresenter.REQUEST_GET_FINE_LOCATION_PERMISSION -> mainView.mainPresenter.setMapLocation()
+        }
+    }
 }

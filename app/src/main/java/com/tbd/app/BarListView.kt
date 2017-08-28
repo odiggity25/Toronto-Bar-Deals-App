@@ -67,6 +67,10 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         })
     }
 
+    fun bind(dealFilter: DealFilter) {
+        adapter.bind(dealFilter)
+    }
+
     private fun adapterChanged() {
         getCurrentBar()?.let {
             barFocusChangesSubject.onNext(it.barMeta.id)
@@ -95,7 +99,7 @@ class BarListView(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     fun getCurrentBar(): Bar? {
         val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-        return if (position >= 0 && adapter.itemCount > 0) adapter.getItem(position) else null
+        return if (position >= 0 && adapter.itemCount > 0 && position < adapter.itemCount) adapter.getItem(position) else null
     }
 
     fun updateEmptyState() {

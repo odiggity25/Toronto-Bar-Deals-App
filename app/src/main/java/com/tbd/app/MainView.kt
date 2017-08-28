@@ -16,6 +16,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -79,9 +80,10 @@ class MainView(context: Context,
 
     private val bars = mutableListOf<Bar>()
     var dealFilter = DealFilter()
-
     var lastOpened: Marker? = null
     val markers = mutableListOf<Marker>()
+    val mainPresenter: MainPresenter
+    private var position: LatLng? = null
 
     init {
         View.inflate(context, R.layout.view_main, this)
@@ -90,12 +92,13 @@ class MainView(context: Context,
         addBarClicks.throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe { if (addImage.rotation == 0f) addBarDialogShowsSubject.onNext(Unit)
                 else addBarDialogClosesSubject.onNext(Unit) }
-        MainPresenter(this, detaches(), barListView)
+        mainPresenter = MainPresenter(this, detaches(), barListView)
         findViewById(R.id.main_moderate).visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
     }
 
     fun bind(filter: DealFilter) {
         this.dealFilter = filter
+        barListView.bind(filter)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -237,6 +240,20 @@ class MainView(context: Context,
         }
     }
 
+    fun setPositionMarker(latLng: LatLng) {
+        position = latLng
+        addPositionMarker()
+    }
+    fun addPositionMarker() {
+        position?.let {
+            googleMap?.addMarker(MarkerOptions()
+                    .position(it)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_location))
+                    .zIndex(1f)
+            )
+        }
+    }
+
     fun removeMarker(bar: Bar) {
         markers.filter { it.tag == bar.barMeta.id }
                 .map { it.remove() }
@@ -256,6 +273,7 @@ class MainView(context: Context,
 
     fun filterMarkers() {
         googleMap?.clear()
+        addPositionMarker()
         val barsFiltered = bars.filter { !it.deals.filter { it.matchesFilter(dealFilter) }.isEmpty() } as MutableList<Bar>
         barsFiltered.forEach { addMarker(it) }
     }
