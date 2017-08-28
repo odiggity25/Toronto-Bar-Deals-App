@@ -115,7 +115,7 @@ class MainPresenter(private val mainView: MainView,
                             }
                             GeoFireApi.GeoAction.EXITED -> {
                                 it.bar?.let { bar ->
-                                    mainView.removeMarker(bar)
+                                    mainView.removeBar(bar)
                                     barListView.removeBar(bar)
                                 }
                             }
@@ -124,7 +124,7 @@ class MainPresenter(private val mainView: MainView,
                             }
                         }
                     }, {
-                        Timber.e("Failed to retrieve bars ${it.message}")
+                        Timber.e("Failed to retrieve bars $it")
                     }, {
                         Timber.i("On complete barMeta watching")
                     }).autoDispose(cancelSignal)

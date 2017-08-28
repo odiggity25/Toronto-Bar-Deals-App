@@ -227,7 +227,10 @@ class MainView(context: Context,
 
     fun addBar(bar: Bar) {
         bars.add(bar)
-        filterMarkers()
+
+        if (!bar.deals.filter { it.matchesFilter(dealFilter) }.isEmpty()) {
+            addMarker(bar)
+        }
     }
 
     private fun addMarker(bar: Bar) {
@@ -254,9 +257,16 @@ class MainView(context: Context,
         }
     }
 
-    fun removeMarker(bar: Bar) {
-        markers.filter { it.tag == bar.barMeta.id }
-                .map { it.remove() }
+    fun removeBar(bar: Bar) {
+        val marker = markers.firstOrNull { it.tag == bar.barMeta.id }
+        marker?.let {
+            it.remove()
+            markers.remove(it)
+        }
+        val position = bars.indexOfFirst { it.barMeta.id == bar.barMeta.id }
+        if (position >= 0) {
+            bars.removeAt(position)
+        }
     }
 
     fun showMarkerInfoWindow(barId: String) {
@@ -273,6 +283,7 @@ class MainView(context: Context,
 
     fun filterMarkers() {
         googleMap?.clear()
+        markers.clear()
         addPositionMarker()
         val barsFiltered = bars.filter { !it.deals.filter { it.matchesFilter(dealFilter) }.isEmpty() } as MutableList<Bar>
         barsFiltered.forEach { addMarker(it) }
