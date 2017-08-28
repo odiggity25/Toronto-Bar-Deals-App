@@ -1,10 +1,8 @@
 package com.tbd.app
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.location.Location
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.Projection
@@ -69,13 +67,10 @@ class MainPresenter(private val mainView: MainView,
             mainView.showBarView(it)
         }
 
-        if (!hasLocationPermission()) {
+        if (!locationApi.hasLocationPermission()) {
             ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_GET_FINE_LOCATION_PERMISSION)
         }
     }
-
-    private fun hasLocationPermission(): Boolean =
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private fun mapReady() {
         setMapLocation()
@@ -83,7 +78,7 @@ class MainPresenter(private val mainView: MainView,
 
     fun setMapLocation() {
         val torontoLocation = LatLng(43.6532, -79.3832)
-        if (!hasLocationPermission()) {
+        if (!locationApi.hasLocationPermission()) {
             mainView.moveMap(torontoLocation, defaultZoom)
             return
         }
