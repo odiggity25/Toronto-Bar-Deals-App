@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.tbd.app"
+          package="com.nextdrink.app"
     >
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
-        android:name=".AppState"
+        android:name="com.nextdrink.app.AppState"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,7 +18,7 @@
                       no need for explicit permissions despite exported="true"
         -->
         <service
-            android:name=".utils.MyFirebaseInstanceIdService"
+            android:name="com.nextdrink.app.utils.MyFirebaseInstanceIdService"
             android:exported="true"
             >
             <intent-filter>
@@ -36,7 +36,7 @@
             />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.nextdrink.app.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan"
             >
@@ -46,7 +46,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".moderate.ModerateActivity">
+        <activity android:name="com.nextdrink.app.moderate.ModerateActivity">
         </activity>
     </application>
 

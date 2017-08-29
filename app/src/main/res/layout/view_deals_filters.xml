@@ -17,7 +17,7 @@
         android:id="@+id/include"
         />
 
-    <com.tbd.app.TagView
+    <com.nextdrink.app.TagView
         android:id="@+id/filter_deal_tags"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

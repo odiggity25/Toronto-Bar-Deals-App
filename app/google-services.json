@@ -1,27 +1,35 @@
 {
   "project_info": {
-    "project_number": "583575836223",
-    "firebase_url": "https://toronto-bar-deals.firebaseio.com",
-    "project_id": "toronto-bar-deals",
-    "storage_bucket": "toronto-bar-deals.appspot.com"
+    "project_number": "72403843982",
+    "firebase_url": "https://nextdrink-bee88.firebaseio.com",
+    "project_id": "nextdrink-bee88",
+    "storage_bucket": "nextdrink-bee88.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:583575836223:android:42fa9fc9cdb019cc",
+        "mobilesdk_app_id": "1:72403843982:android:7a8b8a6d74384c17",
         "android_client_info": {
-          "package_name": "com.tbd.app"
+          "package_name": "com.nextdrink.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "583575836223-dkvhh0u035usbujlvjvpna2c4ni2n4rh.apps.googleusercontent.com",
+          "client_id": "72403843982-6p6iiho6bgd1j08n10hct5dtnrbmlu9e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nextdrink.app",
+            "certificate_hash": "0ffe15d21416d21091498182b8d59c7ca8355e38"
+          }
+        },
+        {
+          "client_id": "72403843982-fe5af0leos92hf1872rdgbpc45glk69f.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDklOKVGrlG31fGi9-38g0mSFB3F0PkxtU"
+          "current_key": "AIzaSyDqX_0OIjQR4SwaDIHMfHDmtFaAV37Bb5U"
         }
       ],
       "services": {
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72403843982-fe5af0leos92hf1872rdgbpc45glk69f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

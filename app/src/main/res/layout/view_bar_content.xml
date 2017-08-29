@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/star_colour"
                 />
-            <com.tbd.app.utils.view.StarRatingBar
+            <com.nextdrink.app.utils.view.StarRatingBar
                 android:id="@+id/bar_view_star_rating_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"

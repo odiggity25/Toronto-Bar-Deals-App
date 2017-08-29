@@ -33,7 +33,7 @@
               android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
               />
 
-            <com.tbd.app.DayOfWeekPicker
+            <com.nextdrink.app.DayOfWeekPicker
                 android:id="@+id/deal_day_of_week_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                 android:singleLine="true"
                 />
 
-            <com.tbd.app.TagView
+            <com.nextdrink.app.TagView
                 android:id="@+id/add_deal_tags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
